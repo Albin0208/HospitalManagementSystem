@@ -1,10 +1,10 @@
-﻿using System.Configuration;
-using System.Data;
-using System.IO;
-using System.Windows;
-using HmsLibrary.Data.Context;
+﻿using HmsLibrary.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Windows;
+using HmsLibrary.Services;
 
 namespace HmsApp
 {
@@ -13,16 +13,51 @@ namespace HmsApp
     /// </summary>
     public partial class App : Application
     {
-        protected override void OnStartup(StartupEventArgs e)
+        public static IHost? AppHost { get; private set; }
+
+        public App()
         {
-            IConfiguration config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true, true)
+            AppHost = Host.CreateDefaultBuilder()
+                .ConfigureServices((context, services) =>
+                {
+                    IConfiguration config = new ConfigurationBuilder()
+                        .AddJsonFile("appsettings.json", true, true)
+                        .Build();
+
+                    var connectionString = config.GetConnectionString("DefaultConnection");
+
+                    services.AddDbContext<HmsDbContext>(options =>
+                    {
+                        options.UseSqlServer(connectionString);
+                    });
+
+                    // Services registration
+                    services.AddScoped<IPatientService, PatientService>();
+
+                    // Viewmodel registration
+                    services.AddSingleton<MainWindowViewModel>();
+
+                    // Window registration
+                    services.AddSingleton<MainWindow>();
+                })
                 .Build();
+        }
 
-            var connectionString = config.GetConnectionString("DefaultConnection");
-            var dbContext = new HmsDbContext(new DbContextOptions<HmsDbContext>(), connectionString);
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            await AppHost!.StartAsync();
 
-            base.OnStartup(e); // Call the base method
+            var mainWindow = AppHost.Services.GetRequiredService<MainWindow>();
+            mainWindow.Show();
+
+            base.OnStartup(e);
+        }
+
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            await AppHost!.StopAsync();
+
+            base.OnExit(e);
         }
     }
 
