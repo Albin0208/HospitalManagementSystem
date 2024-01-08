@@ -5,5 +5,6 @@ namespace HmsLibrary.Services;
 public interface IPatientService
 {
     string GetPatientName();
-    Patient GetPatient(int id);
+    Task<Patient?> GetPatient(int id);
+    void CreatePatient(string name);
 }

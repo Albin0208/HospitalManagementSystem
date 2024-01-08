@@ -32,13 +32,13 @@ namespace HmsApp
                     });
 
                     // Services registration
-                    services.AddScoped<IPatientService, PatientService>();
+                    services.AddTransient<IPatientService, PatientService>();
 
                     // Viewmodel registration
-                    services.AddSingleton<MainWindowViewModel>();
+                    services.AddTransient<MainWindowViewModel>();
 
                     // Window registration
-                    services.AddSingleton<MainWindow>();
+                    services.AddTransient<MainWindow>();
                 })
                 .Build();
         }

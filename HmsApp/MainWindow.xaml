@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="387,0,0,0" TextWrapping="Wrap" Text="{Binding Text}" VerticalAlignment="Center"/>
+        <TextBox HorizontalAlignment="Left" Margin="413,232,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <Button Content="Button" Command="{Binding CreateUserCommand}"  HorizontalAlignment="Left" Margin="393,288,0,0" VerticalAlignment="Top"/>
 
 
     </Grid>
