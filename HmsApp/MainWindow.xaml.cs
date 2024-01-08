@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
+using HmsApp.ViewModels;
 using HmsLibrary.Data.Context;
 
 namespace HmsApp
@@ -13,6 +15,14 @@ namespace HmsApp
         {
             InitializeComponent();
             DataContext = viewModel;
+        }
+
+        private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is MainWindowViewModel viewModel)
+            {
+                viewModel.Password = ((PasswordBox)sender).Password;
+            }
         }
     }
 }

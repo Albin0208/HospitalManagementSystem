@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Windows;
 using HmsLibrary.Services;
+using HmsApp.ViewModels;
 
 namespace HmsApp
 {
@@ -33,6 +34,7 @@ namespace HmsApp
 
                     // Services registration
                     services.AddTransient<IPatientService, PatientService>();
+                    services.AddTransient<IAuthenticationService, AuthenticationService>();
 
                     // Viewmodel registration
                     services.AddTransient<MainWindowViewModel>();

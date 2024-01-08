@@ -12,6 +12,7 @@ public class HmsDbContext : DbContext
 {
     public HmsDbContext(DbContextOptions<HmsDbContext> options) : base(options) { }
 
-    public DbSet<Patient?> Patients { get; set; }
+    public DbSet<Patient> Patients { get; set; }
+    public DbSet<User> Users { get; set; }
 
 }
