@@ -3,72 +3,71 @@ using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace HMSTests
+namespace HMSTests;
+
+public class PatientTests
 {
-    public class PatientTests
+    private HmsDbContext _dbContext;
+    private IPatientService _patientService;
+
+    [SetUp]
+    public void Setup()
     {
-        private HmsDbContext _dbContext;
-        private IPatientService _patientService;
+        // Setup database connection
+        var options = new DbContextOptionsBuilder<HmsDbContext>()
+            .UseInMemoryDatabase(databaseName: "HmsDb")
+            .Options;
 
-        [SetUp]
-        public void Setup()
+        _dbContext = new HmsDbContext(options);
+
+        // Setup service
+        _patientService = new PatientService(_dbContext);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        // Tear down database connection
+        _dbContext.Dispose();
+    }
+
+    [Test]
+    public async Task InsertPatientAsync()
+    {
+        var patient = new Patient
         {
-            // Setup database connection
-            var options = new DbContextOptionsBuilder<HmsDbContext>()
-                .UseInMemoryDatabase(databaseName: "HmsDb")
-                .Options;
+            FirstName = "John",
+            LastName = "Doe",
+        };
 
-            _dbContext = new HmsDbContext(options);
+        var id = await _patientService.CreatePatient(patient);
 
-            // Setup service
-            _patientService = new PatientService(_dbContext);
-        }
-
-        [TearDown]
-        public void TearDown()
+        var insertedPatient = await _dbContext.Patients.FindAsync(id); // Access the db to check if the patient was inserted
+        Assert.That(insertedPatient, Is.Not.Null);
+        Assert.Multiple(() =>
         {
-            // Tear down database connection
-            _dbContext.Dispose();
-        }
+            Assert.That(insertedPatient.FirstName, Is.EqualTo(patient.FirstName));
+            Assert.That(insertedPatient.LastName, Is.EqualTo(patient.LastName));
+        });
+    }
 
-        [Test]
-        public async Task InsertPatientAsync()
+    [Test]
+    public async Task GetPatientAsync()
+    {
+        var patient = new Patient
         {
-            var patient = new Patient
-            {
-                FirstName = "John",
-                LastName = "Doe",
-            };
+            FirstName = "John",
+            LastName = "Doe",
+        };
 
-            var id = await _patientService.CreatePatient(patient);
+        var id = await _patientService.CreatePatient(patient);
 
-            var insertedPatient = await _dbContext.Patients.FindAsync(id); // Access the db to check if the patient was inserted
-            Assert.That(insertedPatient, Is.Not.Null);
-            Assert.Multiple(() =>
-            {
-                Assert.That(insertedPatient.FirstName, Is.EqualTo(patient.FirstName));
-                Assert.That(insertedPatient.LastName, Is.EqualTo(patient.LastName));
-            });
-        }
-
-        [Test]
-        public async Task GetPatientAsync()
+        var insertedPatient = await _patientService.GetPatient(id);
+        Assert.That(insertedPatient, Is.Not.Null);
+        Assert.Multiple(() =>
         {
-            var patient = new Patient
-            {
-                FirstName = "John",
-                LastName = "Doe",
-            };
-
-            var id = await _patientService.CreatePatient(patient);
-
-            var insertedPatient = await _patientService.GetPatient(id);
-            Assert.That(insertedPatient, Is.Not.Null);
-            Assert.Multiple(() =>
-            {
-                Assert.That(insertedPatient.FirstName, Is.EqualTo(patient.FirstName));
-                Assert.That(insertedPatient.LastName, Is.EqualTo(patient.LastName));
-            });
-        }
+            Assert.That(insertedPatient.FirstName, Is.EqualTo(patient.FirstName));
+            Assert.That(insertedPatient.LastName, Is.EqualTo(patient.LastName));
+        });
     }
 }
