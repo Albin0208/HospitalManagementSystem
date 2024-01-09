@@ -1,12 +1,14 @@
 using HmsLibrary.Data.Context;
 using HmsLibrary.Data.Model;
+using HmsLibrary.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace HMSTests
 {
-    public class Tests
+    public class PatientTests
     {
         private HmsDbContext _dbContext;
+        private IPatientService _patientService;
 
         [SetUp]
         public void Setup()
@@ -17,10 +19,20 @@ namespace HMSTests
                 .Options;
 
             _dbContext = new HmsDbContext(options);
+
+            // Setup service
+            _patientService = new PatientService(_dbContext);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            // Tear down database connection
+            _dbContext.Dispose();
         }
 
         [Test]
-        public void Test1()
+        public async Task InsertPatientAsync()
         {
             var patient = new Patient
             {
@@ -28,10 +40,9 @@ namespace HMSTests
                 LastName = "Doe",
             };
 
-            _dbContext.Patients.Add(patient);
-            _dbContext.SaveChanges();
+            var id = await _patientService.CreatePatient(patient);
 
-            var insertedPatient = _dbContext.Patients.Find(patient.Id);
+            var insertedPatient = await _dbContext.Patients.FindAsync(id); // Access the db to check if the patient was inserted
             Assert.That(insertedPatient, Is.Not.Null);
             Assert.Multiple(() =>
             {
