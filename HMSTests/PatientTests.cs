@@ -50,5 +50,25 @@ namespace HMSTests
                 Assert.That(insertedPatient.LastName, Is.EqualTo(patient.LastName));
             });
         }
+
+        [Test]
+        public async Task GetPatientAsync()
+        {
+            var patient = new Patient
+            {
+                FirstName = "John",
+                LastName = "Doe",
+            };
+
+            var id = await _patientService.CreatePatient(patient);
+
+            var insertedPatient = await _patientService.GetPatient(id);
+            Assert.That(insertedPatient, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(insertedPatient.FirstName, Is.EqualTo(patient.FirstName));
+                Assert.That(insertedPatient.LastName, Is.EqualTo(patient.LastName));
+            });
+        }
     }
 }
