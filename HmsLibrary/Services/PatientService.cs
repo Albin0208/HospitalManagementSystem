@@ -27,11 +27,10 @@ public class PatientService : IPatientService
     {
         return _dbContext.Patients.FirstOrDefaultAsync(p => p.Id == id);
     }
-
-    public void CreatePatient(string name)
+    /// <inheritdoc />
+    public async Task<int> CreatePatient(Patient patient)
     {
-        var newPatient = new Patient { FirstName = "John", LastName = "Doe"};
-        _dbContext.Patients.Add(newPatient);
-        _dbContext.SaveChanges();
+        await _dbContext.Patients.AddAsync(patient);
+        return await _dbContext.SaveChangesAsync();
     }
 }
