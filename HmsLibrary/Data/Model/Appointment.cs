@@ -8,8 +8,8 @@ namespace HmsLibrary.Data.Model;
 
 public class Appointment : BaseEntity
 {
-    public int PatientId { get; set; }
-    public int DoctorId { get; set; }
+    public Patient Patient { get; set; }
+    public User Doctor { get; set; }
     public DateTime Date { get; set; }
     public string Reason { get; set; } = "";
     public string? Notes { get; set; }

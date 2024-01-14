@@ -29,7 +29,7 @@ public class HmsDbContext : DbContext
             foreach (var entity in entityTypes)
             {
                 modelBuilder.Entity(entity).Property<DateTime>("CreatedAt").HasDefaultValueSql("getdate()");
-                modelBuilder.Entity(entity).Property<DateTime>("UpdatedAt").HasDefaultValueSql("getdate()").ValueGeneratedOnAddOrUpdate();
+                modelBuilder.Entity(entity).Property<DateTime>("UpdatedAt").ValueGeneratedOnAddOrUpdate();
             }
         }
 
