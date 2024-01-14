@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 
 namespace HmsLibrary.Data.Model;
 
-public class Patient
+public class Patient : BaseEntity
 {
-    public int Id { get; set; }
     [Required]
     public string FirstName { get; set; }
     [Required]
@@ -25,10 +24,4 @@ public class Patient
     public string City { get; set; }
     public string ZipCode { get; set; }
     public string Country { get; set; }
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public DateTime CreatedAt { get; set; }
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public DateTime UpdatedAt { get; set; }
-
-
 }

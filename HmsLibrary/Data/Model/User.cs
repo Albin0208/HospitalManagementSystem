@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace HmsLibrary.Data.Model;
 
-public class User
+public class User : BaseEntity
 {
-    [Required]
-    public int Id { get; set; }
     [Required]
     public string Username { get; set; } = "";
     [Required]
@@ -26,8 +24,4 @@ public class User
     public string? State { get; set; } = "";
     public string? ZipCode { get; set; } = "";
     public string? Country { get; set; } = "";
-    [Required, Timestamp]
-    public DateTime CreatedAt { get; set; }
-    [Required, Timestamp]
-    public DateTime UpdatedAt { get; set; }
 }

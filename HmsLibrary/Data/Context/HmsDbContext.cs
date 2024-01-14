@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using HmsLibrary.Data.Model;
@@ -14,15 +15,23 @@ public class HmsDbContext : DbContext
 
     public DbSet<Patient> Patients { get; set; }
     public DbSet<User> Users { get; set; }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Patient>()
-            .Property(p => p.CreatedAt)
-            .HasDefaultValueSql("getdate()");
+        base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Patient>()
-            .Property(p => p.UpdatedAt)
-            .ValueGeneratedOnAddOrUpdate();
+        // Get all entities that inherit from BaseEntity
+        var entityTypes = Assembly.GetAssembly(typeof(BaseEntity))?.GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(BaseEntity)));
+
+        if (entityTypes != null)
+        {
+            foreach (var entity in entityTypes)
+            {
+                modelBuilder.Entity(entity).Property<DateTime>("CreatedAt").HasDefaultValueSql("getdate()");
+                modelBuilder.Entity(entity).Property<DateTime>("UpdatedAt").HasDefaultValueSql("getdate()").ValueGeneratedOnAddOrUpdate();
+            }
+        }
+
     }
 }

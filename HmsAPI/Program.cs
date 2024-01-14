@@ -27,6 +27,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// TODO add authentication for the API
+// Protect the API with JWT authentication
+/* Protected routes
+ - All patient routes 
+ */
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
