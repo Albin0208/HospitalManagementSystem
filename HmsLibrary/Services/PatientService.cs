@@ -31,4 +31,9 @@ public class PatientService : IPatientService
 
         return patient;
     }
+
+    public Task<List<Patient>> GetPatients()
+    {
+        return _dbContext.Patients.ToListAsync();
+    }
 }

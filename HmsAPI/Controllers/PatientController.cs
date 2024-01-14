@@ -28,10 +28,9 @@ namespace HmsAPI.Controllers
         /// </summary>
         /// <returns>The list of patients</returns>
         [HttpGet]
-        public IActionResult GetPatients()
+        public async Task<IActionResult> GetPatientsAsync()
         {
-            //var patients = _patientService.GetPatients();
-            object? patients = null;
+            var patients = await _patientService.GetPatients();
 
             return Ok(patients);
         }

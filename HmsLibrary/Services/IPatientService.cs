@@ -16,4 +16,6 @@ public interface IPatientService
     /// <param name="patient">The patient to be added to the database</param>
     /// <returns>The id of the new patient</returns>
     Task<Patient> CreatePatient(Patient patient);
+
+    Task<List<Patient>> GetPatients();
 }
