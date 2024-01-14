@@ -33,13 +33,27 @@ public class AuthenticationService : IAuthenticationService
 
     public bool SignUp(string username, string password)
     {
+        // Check if the user already exists
+        if (_dbContext.Users.Any(u => u.Username == username))
+        {
+            // User already exists
+            return false;
+        }
+
         // Encrypt password
         password = Util.PasswordHasher.HashPassword(password);
 
         var user = new User { Username = username, Password = password };
         _dbContext.Users.Add(user);
-        var result = _dbContext.SaveChanges();
-
-        return result != null;
+        try
+        {
+            _dbContext.SaveChanges();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error saving user: {e.Message}");
+            return false;
+        }
     }
 }

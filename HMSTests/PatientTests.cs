@@ -40,14 +40,14 @@ public class PatientTests
             LastName = "Doe",
         };
 
-        var id = await _patientService.CreatePatient(patient);
+        var createdPatient = await _patientService.CreatePatient(patient);
 
-        var insertedPatient = await _dbContext.Patients.FindAsync(id); // Access the db to check if the patient was inserted
-        Assert.That(insertedPatient, Is.Not.Null);
+        Assert.That(createdPatient, Is.Not.Null);
+        Assert.That(createdPatient.Id, Is.GreaterThan(0));
         Assert.Multiple(() =>
         {
-            Assert.That(insertedPatient.FirstName, Is.EqualTo(patient.FirstName));
-            Assert.That(insertedPatient.LastName, Is.EqualTo(patient.LastName));
+            Assert.That(createdPatient.FirstName, Is.EqualTo(patient.FirstName));
+            Assert.That(createdPatient.LastName, Is.EqualTo(patient.LastName));
         });
     }
 
@@ -60,9 +60,9 @@ public class PatientTests
             LastName = "Doe",
         };
 
-        var id = await _patientService.CreatePatient(patient);
+        var createdPatient = await _patientService.CreatePatient(patient);
 
-        var insertedPatient = await _patientService.GetPatient(id);
+        var insertedPatient = await _patientService.GetPatient(createdPatient.Id);
         Assert.That(insertedPatient, Is.Not.Null);
         Assert.Multiple(() =>
         {

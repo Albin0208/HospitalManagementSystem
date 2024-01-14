@@ -38,7 +38,9 @@ public class AuthenticationTests
     [Test]
     public void UserCreation()
     {
-        _authenticationService.SignUp("test", "test");
+        var result = _authenticationService.SignUp("test", "test");
+
+        Assert.That(result, Is.True);
 
         var user = _dbContext.Users.FirstOrDefault(u => u.Username == "test");
 
@@ -60,6 +62,15 @@ public class AuthenticationTests
         var result = _authenticationService.SignIn("John", "test");
 
         Assert.That(result, Is.True);
+    }
+
+    [Test]
+    public void SignUpAlreadyCreatedUser()
+    {
+        _authenticationService.SignUp("John", "test");
+        var result = _authenticationService.SignUp("John", "test");
+
+        Assert.That(result, Is.False);
     }
 }
 
