@@ -33,19 +33,26 @@ public class PatientTests
     }
 
     [Test]
-    public async Task InsertPatientAsync()
+    [TestCase("John", "Doe", "john.doe@email.com", "2000-01-01", "1234567890", "123 Main St", "CityA", "12345", "CountryA")]
+    [TestCase("Jane", "Smith", "jane.smith@email.com", "1995-05-15", "9876543210", "456 Oak St", "CityB", "54321", "CountryB")]
+    [TestCase("Jane", "Smith", null, null, null, null, null, null, null)] // Optional parameters are null
+    public async Task InsertPatientAsync(
+        string firstName, string lastName, string? email, string? dateOfBirth, string? phoneNumber,
+        string? address, string? city, string? zipCode, string? country)
     {
+        var parsedDateOfBirth = dateOfBirth == null ? default : DateTime.Parse(dateOfBirth);
+
         var patient = new Patient
         {
-            FirstName = "John",
-            LastName = "Doe",
-            Address = "123 Fake St",
-            DateOfBirth = new DateTime(2000, 1, 1),
-            PhoneNumber = "1234567890",
-            Email = "test@test.com",
-            ZipCode = "12345",
-            City = "Fake City",
-            Country = "Fake Country",
+            FirstName = firstName,
+            LastName = lastName,
+            Address = address,
+            DateOfBirth = parsedDateOfBirth,
+            PhoneNumber = phoneNumber,
+            Email = email,
+            ZipCode = zipCode,
+            City = city,
+            Country = country,
         };
 
         var createdPatient = await _patientService.CreatePatient(patient);
@@ -122,11 +129,51 @@ public class PatientTests
             Country = "Fake Country",
         };
 
-        var p1 = await _patientService.CreatePatient(patient1);
-        var p2 = await _patientService.CreatePatient(patient2);
+        await _patientService.CreatePatient(patient1);
+        await _patientService.CreatePatient(patient2);
 
         var patients = await _patientService.GetPatients();
         Assert.That(patients, Is.Not.Null);
         Assert.That(patients.Count, Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task GetPatientAsync_InvalidId()
+    {
+        var patient = await _patientService.GetPatient(1);
+        Assert.That(patient, Is.Null);
+    }
+
+    [Test]
+    public async Task GetPatientsAsync_NoPatients()
+    {
+        var patients = await _patientService.GetPatients();
+        Assert.That(patients, Is.Not.Null);
+        Assert.That(patients.Count, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task CreatePatientAsync_NullPatient()
+    {
+        Assert.ThrowsAsync<ArgumentNullException>(async () => await _patientService.CreatePatient(null!));
+    }
+
+    [Test]
+    public async Task CreatePatientAsync_NullFirstName()
+    {
+        var patient = new Patient
+        {
+            FirstName = null!,
+            LastName = "Doe",
+            Address = "123 Fake St",
+            DateOfBirth = new DateTime(2000, 1, 1),
+            PhoneNumber = "1234567890",
+            Email = ""
+        };
+
+        Assert.ThrowsAsync<ArgumentException>(async () => await _patientService.CreatePatient(patient));
+
+
+        Assert.That(_dbContext.Patients.Count(), Is.EqualTo(0));
     }
 }

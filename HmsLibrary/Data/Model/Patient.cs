@@ -11,17 +11,21 @@ namespace HmsLibrary.Data.Model;
 
 public class Patient : BaseEntity
 {
-    [Required]
+    [Required, MaxLength(30)]
     public string FirstName { get; set; }
-    [Required]
+    [Required, MaxLength(30)]
     public string LastName { get; set; }
-    [Required, EmailAddress]
-    public string Email { get; set; }
+    [EmailAddress, MaxLength(50)]
+    public string? Email { get; set; }
     public DateTime DateOfBirth { get; set; }
     [Phone]
-    public string PhoneNumber { get; set; }
-    public string Address { get; set; }
-    public string City { get; set; }
-    public string ZipCode { get; set; }
-    public string Country { get; set; }
+    public string? PhoneNumber { get; set; }
+    [MaxLength(100)]
+    public string? Address { get; set; }
+    [MaxLength(50)]
+    public string? City { get; set; }
+    [MaxLength(10)]
+    public string? ZipCode { get; set; }
+    [MaxLength(50)]
+    public string? Country { get; set; }
 }
