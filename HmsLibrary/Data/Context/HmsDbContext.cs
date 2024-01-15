@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using HmsLibrary.Data.Model;
+using HmsLibrary.Data.Model.Employees;
 using Microsoft.EntityFrameworkCore;
 
 namespace HmsLibrary.Data.Context;
@@ -18,20 +19,22 @@ public class HmsDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-
         // Get all entities that inherit from BaseEntity
         var entityTypes = Assembly.GetAssembly(typeof(BaseEntity))?.GetTypes()
-            .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(BaseEntity)));
+            .Where(t => t is { IsClass: true, IsAbstract: false } && t.IsSubclassOf(typeof(BaseEntity)));
 
-        if (entityTypes != null)
+        if (entityTypes == null) return;
+
+        foreach (var entity in entityTypes)
         {
-            foreach (var entity in entityTypes)
-            {
-                modelBuilder.Entity(entity).Property<DateTime>("CreatedAt").HasDefaultValueSql("getdate()");
-                modelBuilder.Entity(entity).Property<DateTime>("UpdatedAt").ValueGeneratedOnAddOrUpdate();
-            }
+            modelBuilder.Entity(entity).Property<DateTime>("CreatedAt").HasDefaultValueSql("getdate()");
+            modelBuilder.Entity(entity).Property<DateTime>("UpdatedAt").ValueGeneratedOnAddOrUpdate();
         }
 
+        modelBuilder.Entity<Employee>().HasDiscriminator<string>("Role")
+            .HasValue<Employee>("Employee")
+            .HasValue<Doctor>("Doctor"); // Add more roles here
+
+        base.OnModelCreating(modelBuilder);
     }
 }
