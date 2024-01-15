@@ -19,6 +19,7 @@ public class PatientTests
             .Options;
 
         _dbContext = new HmsDbContext(options);
+        _dbContext.Database.EnsureDeleted(); // Delete database before each test
 
         // Setup service
         _patientService = new PatientService(_dbContext);
@@ -38,6 +39,13 @@ public class PatientTests
         {
             FirstName = "John",
             LastName = "Doe",
+            Address = "123 Fake St",
+            DateOfBirth = new DateTime(2000, 1, 1),
+            PhoneNumber = "1234567890",
+            Email = "test@test.com",
+            ZipCode = "12345",
+            City = "Fake City",
+            Country = "Fake Country",
         };
 
         var createdPatient = await _patientService.CreatePatient(patient);
@@ -48,6 +56,13 @@ public class PatientTests
         {
             Assert.That(createdPatient.FirstName, Is.EqualTo(patient.FirstName));
             Assert.That(createdPatient.LastName, Is.EqualTo(patient.LastName));
+            Assert.That(createdPatient.Address, Is.EqualTo(patient.Address));
+            Assert.That(createdPatient.DateOfBirth, Is.EqualTo(patient.DateOfBirth));
+            Assert.That(createdPatient.PhoneNumber, Is.EqualTo(patient.PhoneNumber));
+            Assert.That(createdPatient.Email, Is.EqualTo(patient.Email));
+            Assert.That(createdPatient.ZipCode, Is.EqualTo(patient.ZipCode));
+            Assert.That(createdPatient.City, Is.EqualTo(patient.City));
+            Assert.That(createdPatient.Country, Is.EqualTo(patient.Country));
         });
     }
 
@@ -58,6 +73,13 @@ public class PatientTests
         {
             FirstName = "John",
             LastName = "Doe",
+            Address = "123 Fake St",
+            DateOfBirth = new DateTime(2000, 1, 1),
+            PhoneNumber = "1234567890",
+            Email = "test@test.com",
+            ZipCode = "12345",
+            City = "Fake City",
+            Country = "Fake Country",
         };
 
         var createdPatient = await _patientService.CreatePatient(patient);
@@ -69,5 +91,42 @@ public class PatientTests
             Assert.That(insertedPatient.FirstName, Is.EqualTo(patient.FirstName));
             Assert.That(insertedPatient.LastName, Is.EqualTo(patient.LastName));
         });
+    }
+
+    [Test]
+    public async Task GetPatientsAsync()
+    {
+        var patient1 = new Patient
+        {
+            FirstName = "Jake",
+            LastName = "Doe",
+            Address = "123 Fake St",
+            DateOfBirth = new DateTime(2000, 1, 1),
+            PhoneNumber = "1234567890",
+            Email = "test@test.com",
+            ZipCode = "12345",
+            City = "Fake City",
+            Country = "Fake Country",
+        };
+
+        var patient2 = new Patient
+        {
+            FirstName = "Jane",
+            LastName = "Doe",
+            Address = "123 Fake St",
+            DateOfBirth = new DateTime(2000, 1, 1),
+            PhoneNumber = "1234567890",
+            Email = "test@test.com",
+            ZipCode = "12345",
+            City = "Fake City",
+            Country = "Fake Country",
+        };
+
+        var p1 = await _patientService.CreatePatient(patient1);
+        var p2 = await _patientService.CreatePatient(patient2);
+
+        var patients = await _patientService.GetPatients();
+        Assert.That(patients, Is.Not.Null);
+        Assert.That(patients.Count, Is.EqualTo(2));
     }
 }

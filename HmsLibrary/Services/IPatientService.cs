@@ -17,5 +17,9 @@ public interface IPatientService
     /// <returns>The id of the new patient</returns>
     Task<Patient> CreatePatient(Patient patient);
 
+    /// <summary>
+    /// Get all patients in the database
+    /// </summary>
+    /// <returns>All patients in the database</returns>
     Task<List<Patient>> GetPatients();
 }

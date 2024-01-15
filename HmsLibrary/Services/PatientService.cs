@@ -18,20 +18,22 @@ public class PatientService : IPatientService
         _dbContext = dbContext;
     }
 
+    /// <inheritdoc />
     public Task<Patient?> GetPatient(int id)
     {
         return _dbContext.Patients.FirstOrDefaultAsync(p => p.Id == id);
     }
+
     /// <inheritdoc />
     public async Task<Patient> CreatePatient(Patient patient)
     {
         await _dbContext.Patients.AddAsync(patient);
-        var id = await _dbContext.SaveChangesAsync();
-        patient.Id = id;
+        await _dbContext.SaveChangesAsync();
 
         return patient;
     }
 
+    /// <inheritdoc />
     public Task<List<Patient>> GetPatients()
     {
         return _dbContext.Patients.ToListAsync();
