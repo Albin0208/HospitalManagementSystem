@@ -9,7 +9,7 @@ namespace HmsLibrary.Data.Model;
 public class Appointment : BaseEntity
 {
     public Patient Patient { get; set; }
-    public User Doctor { get; set; }
+    public Employee Doctor { get; set; }
     public DateTime Date { get; set; }
     public string Reason { get; set; } = "";
     public string? Notes { get; set; }

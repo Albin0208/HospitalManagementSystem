@@ -20,7 +20,7 @@ public class AuthenticationService : IAuthenticationService
     public bool SignIn(string username, string password)
     {
         // Grab the user with the username
-        var user = _dbContext.Users.FirstOrDefault(u => u.Username == username);
+        var user = _dbContext.Employees.FirstOrDefault(u => u.Username == username);
         // Check if the user exists
         if (user == null)
         {
@@ -31,20 +31,20 @@ public class AuthenticationService : IAuthenticationService
         return Util.PasswordHasher.VerifyPassword(password, user.Password);
     }
 
-    public bool SignUp(string username, string password)
+    public bool SignUp(Employee employee, string password)
     {
         // Check if the user already exists
-        if (_dbContext.Users.Any(u => u.Username == username))
+        if (_dbContext.Employees.Any(u => u.Username == employee.Username))
         {
-            // User already exists
+            // Employee already exists
             return false;
         }
 
         // Encrypt password
         password = Util.PasswordHasher.HashPassword(password);
 
-        var user = new User { Username = username, Password = password };
-        _dbContext.Users.Add(user);
+        employee.Password = password;
+        _dbContext.Employees.Add(employee);
         try
         {
             _dbContext.SaveChanges();

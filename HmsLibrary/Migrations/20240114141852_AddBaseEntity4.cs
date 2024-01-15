@@ -13,7 +13,7 @@ namespace HmsLibrary.Migrations
         {
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdatedAt",
-                table: "Users",
+                table: "Employees",
                 type: "datetime2",
                 nullable: false,
                 defaultValueSql: "getdate()",
@@ -22,7 +22,7 @@ namespace HmsLibrary.Migrations
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreatedAt",
-                table: "Users",
+                table: "Employees",
                 type: "datetime2",
                 nullable: false,
                 defaultValueSql: "getdate()",
@@ -75,7 +75,7 @@ namespace HmsLibrary.Migrations
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdatedAt",
-                table: "Users",
+                table: "Employees",
                 type: "datetime2",
                 nullable: false,
                 oldClrType: typeof(DateTime),
@@ -84,7 +84,7 @@ namespace HmsLibrary.Migrations
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreatedAt",
-                table: "Users",
+                table: "Employees",
                 type: "datetime2",
                 nullable: false,
                 oldClrType: typeof(DateTime),

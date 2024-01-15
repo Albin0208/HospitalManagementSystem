@@ -16,10 +16,10 @@ namespace HmsLibrary.Migrations
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_Users",
-                table: "Users");
+                table: "Employees");
 
             migrationBuilder.RenameTable(
-                name: "Users",
+                name: "Employees",
                 newName: "BaseEntity");
 
             migrationBuilder.AlterColumn<string>(
@@ -165,11 +165,11 @@ namespace HmsLibrary.Migrations
 
             migrationBuilder.RenameTable(
                 name: "BaseEntity",
-                newName: "Users");
+                newName: "Employees");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Username",
-                table: "Users",
+                table: "Employees",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -179,7 +179,7 @@ namespace HmsLibrary.Migrations
 
             migrationBuilder.AlterColumn<string>(
                 name: "Password",
-                table: "Users",
+                table: "Employees",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -189,7 +189,7 @@ namespace HmsLibrary.Migrations
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreatedAt",
-                table: "Users",
+                table: "Employees",
                 type: "datetime2",
                 rowVersion: true,
                 nullable: false,
@@ -199,7 +199,7 @@ namespace HmsLibrary.Migrations
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Users",
-                table: "Users",
+                table: "Employees",
                 column: "Id");
 
             migrationBuilder.CreateTable(

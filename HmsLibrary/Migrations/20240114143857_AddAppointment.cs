@@ -13,7 +13,7 @@ namespace HmsLibrary.Migrations
         {
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdatedAt",
-                table: "Users",
+                table: "Employees",
                 type: "datetime2",
                 nullable: false,
                 oldClrType: typeof(DateTime),
@@ -60,7 +60,7 @@ namespace HmsLibrary.Migrations
                 name: "FK_Appointment_Users_DoctorId",
                 table: "Appointment",
                 column: "DoctorId",
-                principalTable: "Users",
+                principalTable: "Employees",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -86,7 +86,7 @@ namespace HmsLibrary.Migrations
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "UpdatedAt",
-                table: "Users",
+                table: "Employees",
                 type: "datetime2",
                 nullable: false,
                 defaultValueSql: "getdate()",
