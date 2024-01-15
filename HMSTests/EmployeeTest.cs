@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HMSTests;
 
-public class UserTest
+public class EmployeeTest
 {
     private HmsDbContext _dbContext;
 
