@@ -46,14 +46,14 @@ public class AppointmentService : IAppointmentService
         return appointment;
     }
 
-    public async Task<Appointment> GetAppointment(int id)
+    public Task<Appointment?> GetAppointment(int id)
     {
-        throw new NotImplementedException();
+        return _dbContext.Appointments.FirstOrDefaultAsync(a => a.Id == id);
     }
 
-    public async Task<List<Appointment>> GetAppointments()
+    public Task<List<Appointment>> GetAllAppointments()
     {
-        throw new NotImplementedException();
+        return _dbContext.Appointments.ToListAsync();
     }
 
     public Task<List<Appointment>> GetAppointmentsByCriteria(DateTime? date, int? doctorId, int? patientId)
