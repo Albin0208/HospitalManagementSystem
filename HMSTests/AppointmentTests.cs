@@ -232,4 +232,57 @@ public class AppointmentTests
         Assert.That(fetchedAppointments, Is.Not.Null);
         Assert.That(fetchedAppointments, Has.Count.EqualTo(0));
     }
+
+    [Test]
+    public async Task GetAppointmentAsync()
+    {
+        var appointment = new Appointment
+        {
+            Date = DateTime.Now,
+            Doctor = doctor,
+            Patient = patient,
+        };
+
+        await _dbContext.Appointments.AddAsync(appointment);
+        await _dbContext.SaveChangesAsync();
+
+        var fetchedAppointment = await _appointmentService.GetAppointment(appointment.Id);
+
+        Assert.That(fetchedAppointment, Is.Not.Null);
+        Assert.That(fetchedAppointment, Is.EqualTo(appointment));
+    }
+
+    [Test]
+    public async Task GetAppointmentAsync_InvalidId()
+    {
+        var fetchedAppointment = await _appointmentService.GetAppointment(1);
+
+        Assert.That(fetchedAppointment, Is.Null);
+    }
+
+    [Test]
+    public async Task GetAppointmentsAsync()
+    {
+        var appointment1 = new Appointment
+        {
+            Date = DateTime.Now,
+            Doctor = doctor,
+            Patient = patient,
+        };
+
+        var appointment2 = new Appointment
+        {
+            Date = DateTime.Now,
+            Doctor = doctor,
+            Patient = patient,
+        };
+
+        await _dbContext.Appointments.AddRangeAsync(appointment1, appointment2);
+        await _dbContext.SaveChangesAsync();
+
+        var fetchedAppointments = await _appointmentService.GetAllAppointments();
+
+        Assert.That(fetchedAppointments, Is.Not.Null);
+        Assert.That(fetchedAppointments, Has.Count.EqualTo(2));
+    }
 }
