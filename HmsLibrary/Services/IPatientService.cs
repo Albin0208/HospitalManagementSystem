@@ -22,4 +22,11 @@ public interface IPatientService
     /// </summary>
     /// <returns>All patients in the database</returns>
     Task<List<Patient>> GetPatients();
+
+    /// <summary>
+    /// Update the given patient in the database
+    /// </summary>
+    /// <param name="patient">The patient with the modified fields</param>
+    /// <returns>The modified patient</returns>
+    Task<Patient> UpdatePatient(Patient patient);
 }

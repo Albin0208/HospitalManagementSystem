@@ -28,4 +28,25 @@ public class Patient : BaseEntity
     public string? ZipCode { get; set; }
     [MaxLength(50)]
     public string? Country { get; set; }
+
+    public Patient()
+    {
+    }
+
+    public Patient(Patient patient)
+    {
+        Id = patient.Id;
+        CreatedAt = patient.CreatedAt;
+        UpdatedAt = patient.UpdatedAt;
+        FirstName = patient.FirstName;
+        LastName = patient.LastName;
+        Email = patient.Email;
+        DateOfBirth = patient.DateOfBirth;
+        PhoneNumber = patient.PhoneNumber;
+        Address = patient.Address;
+        City = patient.City;
+        ZipCode = patient.ZipCode;
+        Country = patient.Country;
+        PhoneNumber = patient.PhoneNumber;
+    }
 }

@@ -36,12 +36,12 @@ public class PatientService : IPatientService
 
         if (string.IsNullOrWhiteSpace(patient.FirstName))
         {
-            throw new ArgumentException("First name cannot be empty or null.", nameof(patient.FirstName));
+            throw new ArgumentException("Firstname cannot be empty or null.", nameof(patient.FirstName));
         }
 
         if (string.IsNullOrWhiteSpace(patient.LastName))
         {
-            throw new ArgumentException("Last name cannot be empty or null.", nameof(patient.LastName));
+            throw new ArgumentException("Lastname cannot be empty or null.", nameof(patient.LastName));
         }
 
         await _dbContext.Patients.AddAsync(patient);
@@ -54,5 +54,24 @@ public class PatientService : IPatientService
     public Task<List<Patient>> GetPatients()
     {
         return _dbContext.Patients.ToListAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task<Patient> UpdatePatient(Patient patient)
+    {
+        ArgumentNullException.ThrowIfNull(patient);
+
+        var dbPatient = await GetPatient(patient.Id);
+
+        if (dbPatient == null)
+        {
+            throw new ArgumentException("Patient does not exist.", nameof(patient));
+        }
+
+        // Update the patient with the new values
+        _dbContext.Entry(dbPatient).CurrentValues.SetValues(patient);
+        await _dbContext.SaveChangesAsync();
+
+        return patient;
     }
 }
