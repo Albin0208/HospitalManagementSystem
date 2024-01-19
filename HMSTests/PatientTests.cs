@@ -176,4 +176,52 @@ public class PatientTests
 
         Assert.That(_dbContext.Patients.Count(), Is.EqualTo(0));
     }
+
+    [Test]
+    [TestCase("John", null, "123 Fake St")]
+    [TestCase(null, "Doe", "123 Fake St")]
+    [TestCase(null, null, "123 Fake St")]
+    public async Task UpdatePatient(string? firstname, string? lastname, string? address)
+    {
+        var patient = new Patient()
+        {
+            FirstName = "Jake",
+            LastName = "Doe",
+            Address = "123 Fake St",
+            DateOfBirth = new DateTime(2000, 1, 1),
+            PhoneNumber = "1234567890",
+            Email = "test@test.com",
+            ZipCode = "12345",
+            City = "Fake City",
+            Country = "Fake Country",
+        };
+
+        // Add the patient to the database
+        _dbContext.Patients.Add(patient);
+        await _dbContext.SaveChangesAsync();
+
+        var changedPatient = new Patient(patient)
+        {
+            // Change the patient's name
+            FirstName = firstname,
+            LastName = lastname,
+            Address = address,
+        };
+
+        var updatedPatient = await _patientService.UpdatePatient(changedPatient);
+
+        Assert.That(updatedPatient, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(updatedPatient.FirstName, Is.EqualTo(changedPatient.FirstName));
+            Assert.That(updatedPatient.LastName, Is.EqualTo(changedPatient.LastName));
+            Assert.That(updatedPatient.Address, Is.EqualTo(changedPatient.Address));
+            Assert.That(updatedPatient.DateOfBirth, Is.EqualTo(changedPatient.DateOfBirth));
+            Assert.That(updatedPatient.PhoneNumber, Is.EqualTo(changedPatient.PhoneNumber));
+            Assert.That(updatedPatient.Email, Is.EqualTo(changedPatient.Email));
+            Assert.That(updatedPatient.ZipCode, Is.EqualTo(changedPatient.ZipCode));
+            Assert.That(updatedPatient.City, Is.EqualTo(changedPatient.City));
+            Assert.That(updatedPatient.Country, Is.EqualTo(changedPatient.Country));
+        });
+    }
 }
