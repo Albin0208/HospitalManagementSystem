@@ -1,0 +1,235 @@
+﻿using HmsLibrary.Data.Context;
+using HmsLibrary.Services;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using HmsLibrary.Data.Model;
+using HmsLibrary.Data.Model.Employees;
+
+namespace HMSTests;
+
+public class AppointmentTests
+{
+    private HmsDbContext _dbContext;
+    private IAppointmentService _appointmentService;
+
+    private Doctor doctor;
+    private Patient patient;
+
+    [SetUp]
+    public void Setup()
+    {
+        // Setup database connection
+        var options = new DbContextOptionsBuilder<HmsDbContext>()
+            .UseInMemoryDatabase(databaseName: "HmsDb")
+            .Options;
+
+        _dbContext = new HmsDbContext(options);
+        _dbContext.Database.EnsureDeleted(); // Delete database before each test
+
+        // Setup service
+        _appointmentService = new AppointmentService(_dbContext);
+
+        // Create a doctor and a patient
+        doctor = new Doctor
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Username = "john.doe",
+            Password = "test",
+            DateOfBirth = DateTime.Parse("1994-12-01"),
+            PhoneNumber = "123123123",
+            Address = "Street 2",
+            City = "Fake city",
+            ZipCode = "12312",
+            Country = "Fake country",
+        };
+
+        patient = new Patient
+        {
+            FirstName = "Jane",
+            LastName = "Smith",
+            Email = "jane.smith",
+            DateOfBirth = DateTime.Parse("1994-12-01"),
+            PhoneNumber = "123123123",
+            Address = "Street 2",
+            City = "Fake city",
+            ZipCode = "12312",
+            Country = "Fake country",
+        };
+
+        _dbContext.Employees.Add(doctor);
+        _dbContext.Patients.Add(patient);
+        _dbContext.SaveChanges();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        // Tear down database connection
+        _dbContext.Dispose();
+    }
+
+    [Test]
+    public async Task CreateAppointmentAsync()
+    {
+
+
+        var appointment = new Appointment
+        {
+            Date = DateTime.Now,
+            Doctor = doctor,
+            Patient = patient,
+        };
+
+        var createdAppointment = await _appointmentService.CreateAppointment(appointment);
+
+        Assert.That(createdAppointment, Is.Not.Null);
+        Assert.That(createdAppointment.Id, Is.GreaterThan(0));
+        Assert.Multiple(() =>
+        {
+            Assert.That(createdAppointment.Date, Is.EqualTo(appointment.Date));
+            Assert.That(createdAppointment.Doctor, Is.EqualTo(appointment.Doctor));
+            Assert.That(createdAppointment.Patient, Is.EqualTo(appointment.Patient));
+        });
+    }
+
+    [Test]
+    public Task CreateAppointmentAsync_ThrowsArgumentException()
+    {
+        var appointment = new Appointment
+        {
+            Date = DateTime.Now,
+        };
+
+        Assert.ThrowsAsync<ArgumentException>(async () => await _appointmentService.CreateAppointment(appointment));
+
+        return Task.CompletedTask;
+    }
+
+    [Test]
+    [TestCase("2021-01-01", 1, 1)]
+    [TestCase("2021-01-01", null, null)]
+    [TestCase(null, 1, null)]
+    [TestCase(null, null, 1)]
+    [TestCase(null, null, null)]
+    public async Task GetAppointmentsByCriteriaAsync(string? date, int? doctorId, int? patientId)
+    {
+        var parsedDate = date == null ? default : DateTime.Parse(date);
+
+        var appointment = new Appointment
+        {
+            Date = parsedDate,
+            Doctor = doctor,
+            Patient = patient,
+        };
+
+        await _dbContext.Appointments.AddAsync(appointment);
+        await _dbContext.SaveChangesAsync();
+
+        var fetchedAppointments = await _appointmentService.GetAppointmentsByCriteria(parsedDate, doctorId, patientId);
+
+        Assert.That(fetchedAppointments, Is.Not.Null);
+        Assert.That(fetchedAppointments, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    [TestCase("2021-01-01", 1, 1, 1)]
+    [TestCase("2021-01-01", null, null, 3)]
+    [TestCase("2021-01-01", null, 2, 2)]
+    [TestCase("2021-02-01", null, null, 1)]
+    [TestCase(null, 1, null, 2)]
+    [TestCase(null, null, 1, 2)]
+    [TestCase(null, 1, 1, 1)]
+    [TestCase(null, null, null, 4)]
+    public async Task GetMultipleAppointmentsByCriteria(DateTime? date, int? doctorId, int? patientId, int expectedCount)
+    {
+        // Create a second doctor and patient
+        var doctor2 = new Doctor
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Username = "john.doe",
+            Password = "test",
+            DateOfBirth = DateTime.Parse("1994-12-01"),
+            PhoneNumber = "123123123",
+            Address = "Street 2",
+            City = "Fake city",
+            ZipCode = "12312",
+            Country = "Fake country",
+        };
+
+        var patient2 = new Patient
+        {
+            FirstName = "Jane",
+            LastName = "Smith",
+            Email = "jane.smith",
+            DateOfBirth = DateTime.Parse("1994-12-01"),
+            PhoneNumber = "123123123",
+            Address = "Street 2",
+            City = "Fake city",
+            ZipCode = "12312",
+            Country = "Fake country",
+        };
+
+        await _dbContext.Employees.AddAsync(doctor2);
+        await _dbContext.Patients.AddAsync(patient2);
+        await _dbContext.SaveChangesAsync();
+
+        // Create a few appointments
+
+        var appointment1 = new Appointment
+        {
+            Date = DateTime.Parse("2021-01-01"),
+            Doctor = doctor,
+            Patient = patient,
+        };
+
+        var appointment2 = new Appointment
+        {
+            Date = DateTime.Parse("2021-01-01"),
+            Doctor = doctor,
+            Patient = patient2,
+        };
+
+        var appointment3 = new Appointment
+        {
+            Date = DateTime.Parse("2021-02-01"),
+            Doctor = doctor2,
+            Patient = patient,
+        };
+
+        var appointment4 = new Appointment
+        {
+            Date = DateTime.Parse("2021-01-01"),
+            Doctor = doctor2,
+            Patient = patient2,
+        };
+
+        await _dbContext.Appointments.AddRangeAsync(appointment1, appointment2, appointment3, appointment4);
+        await _dbContext.SaveChangesAsync();
+
+        // Fetch appointments by criteria
+        var fetchedAppointments = await _appointmentService.GetAppointmentsByCriteria(date, doctorId, patientId);
+
+        Assert.That(fetchedAppointments, Is.Not.Null);
+        Assert.That(fetchedAppointments, Has.Count.EqualTo(expectedCount));
+    }
+
+    [Test]
+    [TestCase("2021-01-01", 1, 1)]
+    [TestCase("2021-01-01", null, null)]
+    [TestCase(null, 1, null)]
+    [TestCase(null, null, 1)]
+    [TestCase(null, null, null)]
+    public async Task GetAppointmentsByCriteriaAsync_NoAppointments(DateTime? date, int? doctorId, int? patientId)
+    {
+        var fetchedAppointments = await _appointmentService.GetAppointmentsByCriteria(date, doctorId, patientId);
+
+        Assert.That(fetchedAppointments, Is.Not.Null);
+        Assert.That(fetchedAppointments, Has.Count.EqualTo(0));
+    }
+}
