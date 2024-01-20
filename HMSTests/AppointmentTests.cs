@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HmsLibrary.Data.DTO;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Data.Model.Employees;
 
@@ -78,11 +79,11 @@ public class AppointmentTests
     {
 
 
-        var appointment = new Appointment
+        var appointment = new AppointmentDTO
         {
             Date = DateTime.Now,
-            Doctor = doctor,
-            Patient = patient,
+            DoctorId = doctor.Id,
+            PatientId = patient.Id,
         };
 
         var createdAppointment = await _appointmentService.CreateAppointment(appointment);
@@ -92,15 +93,15 @@ public class AppointmentTests
         Assert.Multiple(() =>
         {
             Assert.That(createdAppointment.Date, Is.EqualTo(appointment.Date));
-            Assert.That(createdAppointment.Doctor, Is.EqualTo(appointment.Doctor));
-            Assert.That(createdAppointment.Patient, Is.EqualTo(appointment.Patient));
+            Assert.That(createdAppointment.Doctor, Is.EqualTo(doctor));
+            Assert.That(createdAppointment.Patient, Is.EqualTo(patient));
         });
     }
 
     [Test]
     public Task CreateAppointmentAsync_ThrowsArgumentException()
     {
-        var appointment = new Appointment
+        var appointment = new AppointmentDTO
         {
             Date = DateTime.Now,
         };
