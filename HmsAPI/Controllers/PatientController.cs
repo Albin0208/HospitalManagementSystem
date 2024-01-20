@@ -1,4 +1,5 @@
-﻿using HmsLibrary.Data.Model;
+﻿using HmsAPI.DTO;
+using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -59,12 +60,20 @@ namespace HmsAPI.Controllers
         /// <param name="patient">The patient information to create.</param>
         /// <returns>The created patient.</returns>
         [HttpPost]
-        public async Task<IActionResult> CreatePatient([FromBody] Patient patient)
+        public async Task<IActionResult> CreatePatient([FromBody] PatientRequest request)
         {
-            if (patient == null)
+            var patient = new Patient
             {
-                return BadRequest();
-            }
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Address = request.Address,
+                DateOfBirth = request.DateOfBirth,
+                PhoneNumber = request.PhoneNumber,
+                Email = request.Email,
+                ZipCode = request.ZipCode,
+                City = request.City,
+                Country = request.Country,
+            };
 
             var createdPatient = await _patientService.CreatePatient(patient);
 
