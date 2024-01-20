@@ -27,18 +27,12 @@ public class AppointmentService : IAppointmentService
         }
 
         // Check if the doctor exists
-        var doctorExists = await _dbContext.Employees.AnyAsync(e => e.Id == appointment.Doctor.Id);
-        if (!doctorExists)
-        {
-            throw new ArgumentException("Doctor does not exist or is not specified", nameof(appointment));
-        }
+        var doctor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.Id == appointment.Doctor.Id) ?? throw new ArgumentException("Doctor does not exist or is not specified", nameof(appointment));
 
         // Check if the patient exists
-        var patientExists = await _dbContext.Patients.AnyAsync(p => p.Id == appointment.Patient.Id);
-        if (!patientExists)
-        {
-            throw new ArgumentException("Patient does not exist or is not specified", nameof(appointment));
-        }
+        var patient = await _dbContext.Patients.FirstOrDefaultAsync(p => p.Id == appointment.Patient.Id) ?? throw new ArgumentException("Patient does not exist or is not specified", nameof(appointment));
+        appointment.Doctor = doctor;
+        appointment.Patient = patient;
 
         await _dbContext.Appointments.AddAsync(appointment);
         await _dbContext.SaveChangesAsync();
