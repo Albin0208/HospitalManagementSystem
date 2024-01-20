@@ -17,7 +17,7 @@ public class Patient : BaseEntity
     public string LastName { get; set; }
     [EmailAddress, MaxLength(50)]
     public string? Email { get; set; }
-    public DateTime DateOfBirth { get; set; }
+    public DateTime? DateOfBirth { get; set; }
     [Phone]
     public string? PhoneNumber { get; set; }
     [MaxLength(100)]

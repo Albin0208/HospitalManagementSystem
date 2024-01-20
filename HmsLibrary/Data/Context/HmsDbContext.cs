@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Data.Model.Employees;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace HmsLibrary.Data.Context;
 
@@ -20,17 +21,18 @@ public class HmsDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         // Get all entities that inherit from BaseEntity
         var entityTypes = Assembly.GetAssembly(typeof(BaseEntity))?.GetTypes()
             .Where(t => t is { IsClass: true, IsAbstract: false } && t.IsSubclassOf(typeof(BaseEntity)));
 
-        if (entityTypes == null) return;
+        if (entityTypes != null)
+            foreach (var entity in entityTypes)
+            {
+                modelBuilder.Entity(entity).Property<DateTime>("CreatedAt").HasDefaultValueSql("GETDATE()");
+                modelBuilder.Entity(entity).Property<DateTime>("UpdatedAt").HasDefaultValueSql("GETDATE()").ValueGeneratedOnAddOrUpdate();
+            }
 
-        foreach (var entity in entityTypes)
-        {
-            modelBuilder.Entity(entity).Property<DateTime>("CreatedAt").HasDefaultValueSql("getdate()");
-            modelBuilder.Entity(entity).Property<DateTime>("UpdatedAt").ValueGeneratedOnAddOrUpdate();
-        }
 
         modelBuilder.Entity<Employee>().HasDiscriminator<string>("Role")
             .HasValue<Employee>("Employee")

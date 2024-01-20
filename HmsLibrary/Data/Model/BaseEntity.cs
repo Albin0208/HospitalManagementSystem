@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,8 @@ namespace HmsLibrary.Data.Model;
 public abstract class BaseEntity
 {
     public int Id { get; set; }
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Timestamp]
     public DateTime CreatedAt { get; set; }
+    [Timestamp]
     public DateTime UpdatedAt { get; set; }
 }
