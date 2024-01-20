@@ -24,7 +24,9 @@ public class EmployeeController : ControllerBase
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
+            Username = request.Username,
             Role = request.Role,
+            Password = "1234"
         };
 
         employee = await _employeeService.CreateEmployee(employee);

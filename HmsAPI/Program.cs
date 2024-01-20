@@ -1,5 +1,6 @@
 using HmsLibrary.Data.Context;
 using HmsLibrary.Services;
+using HmsLibrary.Services.EmployeeServices;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,8 @@ builder.Services.AddDbContext<HmsDbContext>(options =>
 
 // Services registration
 builder.Services.AddTransient<IPatientService, PatientService>();
+builder.Services.AddTransient<IAppointmentService, AppointmentService>();
+builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
