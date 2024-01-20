@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HmsLibrary.Data.Context;
+using HmsLibrary.Data.DTO;
 using HmsLibrary.Data.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,26 +19,27 @@ public class AppointmentService : IAppointmentService
         _dbContext = context;
     }
 
-    public async Task<Appointment> CreateAppointment(Appointment appointment)
+    public async Task<Appointment> CreateAppointment(AppointmentDTO appointment)
     {
-        // Validate that the appointment has a doctor and a patient
-        if (appointment.Doctor?.Id == null || appointment.Patient?.Id == null)
-        {
-            throw new ArgumentException("Appointment must have a doctor and a patient", nameof(appointment));
-        }
-
         // Check if the doctor exists
-        var doctor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.Id == appointment.Doctor.Id) ?? throw new ArgumentException("Doctor does not exist or is not specified", nameof(appointment));
+        var doctor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.Id == appointment.DoctorId) ?? throw new ArgumentException("Doctor does not exist or is not specified", nameof(appointment));
 
         // Check if the patient exists
-        var patient = await _dbContext.Patients.FirstOrDefaultAsync(p => p.Id == appointment.Patient.Id) ?? throw new ArgumentException("Patient does not exist or is not specified", nameof(appointment));
-        appointment.Doctor = doctor;
-        appointment.Patient = patient;
+        var patient = await _dbContext.Patients.FirstOrDefaultAsync(p => p.Id == appointment.PatientId) ?? throw new ArgumentException("Patient does not exist or is not specified", nameof(appointment));
 
-        await _dbContext.Appointments.AddAsync(appointment);
+        var newAppointment = new Appointment
+        {
+            Date = appointment.Date,
+            Reason = appointment.Reason,
+            Notes = appointment.Notes,
+            Doctor = doctor,
+            Patient = patient
+        };
+
+        await _dbContext.Appointments.AddAsync(newAppointment);
         await _dbContext.SaveChangesAsync();
 
-        return appointment;
+        return newAppointment;
     }
 
     public Task<Appointment?> GetAppointment(int id)

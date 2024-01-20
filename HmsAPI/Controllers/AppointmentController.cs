@@ -1,4 +1,5 @@
 ﻿using HmsAPI.DTO;
+using HmsLibrary.Data.DTO;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -25,16 +26,16 @@ public class AppointmentController : ControllerBase
     public async Task<IActionResult> CreateAppointment([FromBody] AppointmentRequest request)
     {
         // Check for all required fields
-        if (request.Date == default || request.DoctorId == default || request.PatientId == default || request.Reason == default)
+        if (request.Date == default || request.DoctorId == default || request.PatientId == default)
         {
             return BadRequest("Required fields are missing");
         }
 
-        var appointment = new Appointment
+        var appointment = new AppointmentDTO
         {
             Date = request.Date,
-            Doctor = new Employee { Id = request.DoctorId },
-            Patient = new Patient { Id = request.PatientId },
+            DoctorId = request.DoctorId,
+            PatientId = request.PatientId,
             Reason = request.Reason,
             Notes = request.Notes
         };
