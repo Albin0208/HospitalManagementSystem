@@ -37,17 +37,16 @@ public class PatientTests
     [TestCase("Jane", "Smith", "jane.smith@email.com", "1995-05-15", "9876543210", "456 Oak St", "CityB", "54321", "CountryB")]
     [TestCase("Jane", "Smith", null, null, null, null, null, null, null)] // Optional parameters are null
     public async Task InsertPatientAsync(
-        string firstName, string lastName, string? email, string? dateOfBirth, string? phoneNumber,
+        string firstName, string lastName, string? email, DateTime? dateOfBirth, string? phoneNumber,
         string? address, string? city, string? zipCode, string? country)
     {
-        var parsedDateOfBirth = dateOfBirth == null ? default : DateTime.Parse(dateOfBirth);
 
         var patient = new Patient
         {
             FirstName = firstName,
             LastName = lastName,
             Address = address,
-            DateOfBirth = parsedDateOfBirth,
+            DateOfBirth = dateOfBirth,
             PhoneNumber = phoneNumber,
             Email = email,
             ZipCode = zipCode,
@@ -70,6 +69,10 @@ public class PatientTests
             Assert.That(createdPatient.ZipCode, Is.EqualTo(patient.ZipCode));
             Assert.That(createdPatient.City, Is.EqualTo(patient.City));
             Assert.That(createdPatient.Country, Is.EqualTo(patient.Country));
+
+            Assert.That(createdPatient.CreatedAt, Is.LessThan(DateTime.Now));
+            Assert.That(createdPatient.UpdatedAt, Is.LessThan(DateTime.Now));
+            Assert.That(createdPatient.CreatedAt, Is.EqualTo(createdPatient.UpdatedAt));
         });
     }
 
