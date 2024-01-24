@@ -14,7 +14,7 @@ public class Employee : BaseEntity
     [Required]
     public string Password { get; set; }
     [Required]
-    public string Role { get; set; } = "Employee";
+    public Role Role { get; set; }
     [Required, MaxLength(30)]
     public string FirstName { get; set; }
     [Required, MaxLength(30)]

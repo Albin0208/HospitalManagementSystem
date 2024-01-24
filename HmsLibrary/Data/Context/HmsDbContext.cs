@@ -18,6 +18,7 @@ public class HmsDbContext : DbContext
     public DbSet<Patient> Patients { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
+    public DbSet<Role> Roles { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -34,9 +35,17 @@ public class HmsDbContext : DbContext
             }
 
 
-        modelBuilder.Entity<Employee>().HasDiscriminator<string>("Role")
-            .HasValue<Employee>("Employee")
-            .HasValue<Doctor>("Doctor"); // Add more roles here
+        //modelBuilder.Entity<Employee>().HasDiscriminator<string>("Role")
+        //    .HasValue<Employee>("Employee")
+        //    .HasValue<Doctor>("Doctor"); // Add more roles here
+
+        // Seed default roles
+        modelBuilder.Entity<Role>().HasData(
+            new Role { Id = 1, RoleName = "Admin" },
+            new Role { Id = 2, RoleName = "Doctor" },
+            new Role { Id = 3, RoleName = "Nurse" },
+            new Role { Id = 4, RoleName = "Receptionist" }
+        );
 
         base.OnModelCreating(modelBuilder);
     }
