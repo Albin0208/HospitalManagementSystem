@@ -2,7 +2,6 @@
 using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
 using HmsLibrary.Services.EmployeeServices;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HmsAPI.Controllers;
