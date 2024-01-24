@@ -1,4 +1,6 @@
-﻿using HmsLibrary.Data.Model;
+﻿using HmsAPI.DTO.RequestDTO;
+using HmsAPI.DTO.ResponseDTO;
+using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +23,9 @@ public class RoleController : ControllerBase
     {
         var roles = await _roleService.GetRoles();
 
-        return Ok(roles);
+        var response = roles.Select(RoleResponse.FromRole);
+
+        return Ok(response);
     }
 
     [HttpGet("{id}")]
@@ -34,20 +38,29 @@ public class RoleController : ControllerBase
             return NotFound();
         }
 
-        return Ok(role);
+        var response = RoleResponse.FromRole(role);
+
+        return Ok(response);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateRole([FromBody] EmployeeRole employeeRole)
+    public async Task<IActionResult> CreateRole([FromBody] RoleRequest request)
     {
-        if (string.IsNullOrWhiteSpace(employeeRole.RoleName))
+        if (string.IsNullOrWhiteSpace(request.RoleName))
         {
             return BadRequest("EmployeeRole name cannot be empty or null.");
         }
 
+        var employeeRole = new EmployeeRole
+        {
+            RoleName = request.RoleName
+        };
+
         employeeRole = await _roleService.CreateRole(employeeRole);
 
-        return Ok(employeeRole);
+        var response = RoleResponse.FromRole(employeeRole);
+
+        return Ok(response);
     }
 
 
