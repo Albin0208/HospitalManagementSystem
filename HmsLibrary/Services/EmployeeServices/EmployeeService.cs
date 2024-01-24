@@ -47,7 +47,7 @@ public class EmployeeService : IEmployeeService
         }
 
         // Retrieve the employeeRole from the database based on RoleId
-        var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == employee.RoleId) ?? throw new ArgumentException($"EmployeeRole with ID {employee.RoleId} not found.", nameof(employee.RoleId));
+        var role = await _dbContext.Roles.FindAsync(employee.RoleId) ?? throw new ArgumentException($"Role with ID {employee.RoleId} not found.", nameof(employee.RoleId));
         employee.Role = role;
 
         await _dbContext.Employees.AddAsync(employee);

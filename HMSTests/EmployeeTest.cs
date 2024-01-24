@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HmsLibrary.Data.Context;
 using HmsLibrary.Data.Model;
+using HmsLibrary.Services.EmployeeServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace HMSTests;
@@ -12,6 +13,7 @@ namespace HMSTests;
 public class EmployeeTest
 {
     private HmsDbContext _dbContext;
+    private EmployeeService _employeeService;
 
     [SetUp]
     public void Setup()
@@ -22,6 +24,9 @@ public class EmployeeTest
             .Options;
 
         _dbContext = new HmsDbContext(options);
+        _dbContext.Database.EnsureDeleted(); // Delete database before each test
+
+        _employeeService = new EmployeeService(_dbContext);
 
         // Setup service
 
@@ -35,11 +40,11 @@ public class EmployeeTest
     }
 
     [Test]
-    [TestCase("John", "Doe", "john.doe", "test", "1994-12-01", "123123123", "Street 2", "Fake city", "12312", "Fake country", null)]
+    [TestCase("John", "Doe", "john.doe", "test", "1994-12-01", "123123123", "Street 2", "Fake city", "12312", "Fake country", "Admin")]
     [TestCase("Jane", "Smith", "jane.smith", "test", "1994-12-01", "123123123", "Street 2", "Fake city", "12312", "Fake country", "doctor")]
     [TestCase("Jane", "Smith", "jane.smith", "test", null, null, null, null, null, null, "nurse")]
     public async Task CreateEmployeeAsync(string? firstname, string? lastname, string? username, string? password, 
-        string? dateOfBirth, string? phoneNumber, string? address, string? city, string? zipCode, string? country, string? role)
+        string? dateOfBirth, string? phoneNumber, string? address, string? city, string? zipCode, string? country, string? roleName)
     {
         var parsedDateOfBirth = dateOfBirth == null ? default : DateTime.Parse(dateOfBirth);
 
@@ -57,15 +62,42 @@ public class EmployeeTest
             Country = country,
         };
 
-        if (role != null)
+
+
+        if (roleName != null)
         {
-            employee.Role = new EmployeeRole { RoleName = role }; // Create a new employeeRole;
+            var role = new EmployeeRole { RoleName = roleName };
+
+            var id = await _dbContext.Roles.AddAsync(role);
+
+            employee.RoleId = id.Entity.Id; // Create a new employeeRole;
         }
 
-        var createdEmployee = await _dbContext.Employees.AddAsync(employee); // Change to use the employee service
+        var createdEmployee = await _employeeService.CreateEmployee(employee); // Change to use the employee service
         await _dbContext.SaveChangesAsync();
 
         Assert.That(createdEmployee, Is.Not.Null);
-        Assert.That(createdEmployee.Entity.Role, Is.EqualTo(employee.Role));
-    }   
+        Assert.That(createdEmployee.Role, Is.EqualTo(employee.Role));
+    }
+
+    [Test]
+    public void CreateEmployeeWithNoneExistingRole()
+    {
+        var employee = new Employee
+                {
+            FirstName = "John",
+            LastName = "Doe",
+            Username = "john.doe",
+            Password = "test",
+            DateOfBirth = DateTime.Parse("1994-12-01"),
+            PhoneNumber = "123123123",
+            Address = "Street 2",
+            City = "Fake city",
+            ZipCode = "12312",
+            Country = "Fake country",
+            RoleId = 1,
+        };
+
+        Assert.ThrowsAsync<ArgumentException>(async () => await _employeeService.CreateEmployee(employee));
+    }
 }
