@@ -38,16 +38,16 @@ public class RoleController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateRole([FromBody] Role role)
+    public async Task<IActionResult> CreateRole([FromBody] EmployeeRole employeeRole)
     {
-        if (string.IsNullOrWhiteSpace(role.RoleName))
+        if (string.IsNullOrWhiteSpace(employeeRole.RoleName))
         {
-            return BadRequest("Role name cannot be empty or null.");
+            return BadRequest("EmployeeRole name cannot be empty or null.");
         }
 
-        role = await _roleService.CreateRole(role);
+        employeeRole = await _roleService.CreateRole(employeeRole);
 
-        return Ok(role);
+        return Ok(employeeRole);
     }
 
 

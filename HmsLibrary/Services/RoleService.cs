@@ -18,28 +18,28 @@ public class RoleService : IRoleService
         _dbContext = dbContext;
     }
 
-    public Task<List<Role>> GetRoles()
+    public Task<List<EmployeeRole>> GetRoles()
     {
         return _dbContext.Roles.ToListAsync();
     }
 
-    public Task<Role?> GetRole(int id)
+    public Task<EmployeeRole?> GetRole(int id)
     {
         return _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == id);
     }
 
-    public async Task<Role> CreateRole(Role role)
+    public async Task<EmployeeRole> CreateRole(EmployeeRole employeeRole)
     {
-        ArgumentNullException.ThrowIfNull(role);
+        ArgumentNullException.ThrowIfNull(employeeRole);
 
-        if (string.IsNullOrWhiteSpace(role.RoleName))
+        if (string.IsNullOrWhiteSpace(employeeRole.RoleName))
         {
-            throw new ArgumentException("Role name cannot be empty or null.", nameof(role.RoleName));
+            throw new ArgumentException("EmployeeRole name cannot be empty or null.", nameof(employeeRole.RoleName));
         }
 
-        await _dbContext.Roles.AddAsync(role);
+        await _dbContext.Roles.AddAsync(employeeRole);
         await _dbContext.SaveChangesAsync();
 
-        return role;
+        return employeeRole;
     }
 }

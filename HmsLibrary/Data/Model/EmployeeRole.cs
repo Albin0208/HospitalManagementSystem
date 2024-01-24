@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace HmsLibrary.Data.Model;
 
-public class Role : BaseEntity
+public class EmployeeRole : BaseEntity
 {
     [Required, MaxLength(40)]
     public string RoleName { get; set; }
+    public ICollection<Employee> Employees { get; set; } = new List<Employee>();
 }

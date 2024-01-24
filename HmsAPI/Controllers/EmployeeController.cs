@@ -1,4 +1,5 @@
 ﻿using HmsAPI.DTO;
+using HmsAPI.DTO.ResponseDTO;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
 using HmsLibrary.Services.EmployeeServices;
@@ -22,12 +23,12 @@ public class EmployeeController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateEmployee([FromBody] EmployeeRequest request)
     {
-        // Lookup the role and check if it exists
+        // Lookup the employeeRole and check if it exists
         var role = await _roleService.GetRole(request.RoleId);
 
         if (role == null)
         {
-            return BadRequest("Role does not exist");
+            return BadRequest("EmployeeRole does not exist");
         }
 
         var employee = new Employee
@@ -35,12 +36,40 @@ public class EmployeeController : ControllerBase
             FirstName = request.FirstName,
             LastName = request.LastName,
             Username = request.Username,
+            RoleId = role.Id,
             Role = role,
             Password = "1234"
         };
 
         employee = await _employeeService.CreateEmployee(employee);
 
-        return Ok(employee);
+        var response = EmployeeResponse.FromEmployee(employee);
+
+        return Ok(response);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetEmployees()
+    {
+        var employees = await _employeeService.GetEmployees();
+
+        var response = employees.Select(EmployeeResponse.FromEmployee);
+
+        return Ok(response);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetEmployee(int id)
+    {
+        var employee = await _employeeService.GetEmployee(id);
+
+        if (employee == null)
+        {
+            return NotFound();
+        }
+
+        var response = EmployeeResponse.FromEmployee(employee);
+
+        return Ok(response);
     }
 }

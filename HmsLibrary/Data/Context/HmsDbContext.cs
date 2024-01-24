@@ -18,10 +18,11 @@ public class HmsDbContext : DbContext
     public DbSet<Patient> Patients { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
-    public DbSet<Role> Roles { get; set; }
+    public DbSet<EmployeeRole> Roles { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
 
         // Get all entities that inherit from BaseEntity
         var entityTypes = Assembly.GetAssembly(typeof(BaseEntity))?.GetTypes()
@@ -34,19 +35,18 @@ public class HmsDbContext : DbContext
                 modelBuilder.Entity(entity).Property<DateTime>("UpdatedAt").HasDefaultValueSql("GETDATE()").ValueGeneratedOnAddOrUpdate();
             }
 
-
-        //modelBuilder.Entity<Employee>().HasDiscriminator<string>("Role")
-        //    .HasValue<Employee>("Employee")
-        //    .HasValue<Doctor>("Doctor"); // Add more roles here
-
         // Seed default roles
-        modelBuilder.Entity<Role>().HasData(
-            new Role { Id = 1, RoleName = "Admin" },
-            new Role { Id = 2, RoleName = "Doctor" },
-            new Role { Id = 3, RoleName = "Nurse" },
-            new Role { Id = 4, RoleName = "Receptionist" }
+        modelBuilder.Entity<EmployeeRole>().HasData(
+            new EmployeeRole { Id = 1, RoleName = "Admin" },
+            new EmployeeRole { Id = 2, RoleName = "Doctor" },
+            new EmployeeRole { Id = 3, RoleName = "Nurse" },
+            new EmployeeRole { Id = 4, RoleName = "Receptionist" }
         );
 
-        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Employee>()
+            .HasOne(e => e.Role)
+            .WithMany(r => r.Employees)
+            .HasForeignKey(e => e.RoleId)
+            .IsRequired();
     }
 }
