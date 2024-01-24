@@ -59,7 +59,7 @@ public class EmployeeTest
 
         if (role != null)
         {
-            employee.Role = role;
+            employee.Role = new Role { RoleName = role }; // Create a new role;
         }
 
         var createdEmployee = await _dbContext.Employees.AddAsync(employee); // Change to use the employee service
