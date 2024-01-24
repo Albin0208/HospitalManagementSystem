@@ -15,6 +15,7 @@ builder.Services.AddDbContext<HmsDbContext>(options =>
 builder.Services.AddTransient<IPatientService, PatientService>();
 builder.Services.AddTransient<IAppointmentService, AppointmentService>();
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
+builder.Services.AddTransient<IRoleService, RoleService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

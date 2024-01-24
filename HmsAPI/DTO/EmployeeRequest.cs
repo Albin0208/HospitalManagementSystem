@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using HmsLibrary.Data.Model;
 
 namespace HmsAPI.DTO;
 
@@ -6,7 +7,7 @@ public class EmployeeRequest
 {
     public string Username { get; set; }
     //public string Password { get; set; }
-    public string Role { get; set; } = "Employee";
+    public int RoleId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     //public string? Email { get; set; }
