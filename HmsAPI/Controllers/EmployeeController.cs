@@ -72,4 +72,24 @@ public class EmployeeController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteEmployee(int id)
+    {
+        try
+        {
+            var employee = await _employeeService.DeleteEmployee(id);
+
+            var response = EmployeeResponse.FromEmployee(employee);
+            return Ok(response);
+        }
+        catch (ArgumentException)
+        {
+            return NotFound();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 }

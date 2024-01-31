@@ -55,4 +55,18 @@ public class EmployeeService : IEmployeeService
 
         return employee;
     }
+
+    public Task<Employee> UpdateEmployee(Employee employee)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<Employee> DeleteEmployee(int id)
+    {
+        var employee = await _dbContext.Employees.FindAsync(id) ?? throw new ArgumentException($"Employee with ID {id} not found.", nameof(id));
+        _dbContext.Employees.Remove(employee);
+        await _dbContext.SaveChangesAsync();
+
+        return employee;
+    }
 }
