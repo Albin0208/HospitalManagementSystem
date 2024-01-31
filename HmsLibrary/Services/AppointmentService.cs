@@ -44,12 +44,15 @@ public class AppointmentService : IAppointmentService
 
     public Task<Appointment?> GetAppointment(Guid id)
     {
-        return _dbContext.Appointments.FirstOrDefaultAsync(a => a.Id == id);
+        return _dbContext.Appointments
+            .Include(a => a.Doctor)
+            .Include(a => a.Patient)
+            .FirstOrDefaultAsync(a => a.Id == id);
     }
 
     public Task<List<Appointment>> GetAllAppointments()
     {
-        return _dbContext.Appointments.ToListAsync();
+        return _dbContext.Appointments.Include(a => a.Doctor).Include(a => a.Patient).ToListAsync();
     }
 
     public Task<List<Appointment>> GetAppointmentsByCriteria(DateTime? date, Guid? doctorId, Guid? patientId)
@@ -71,7 +74,7 @@ public class AppointmentService : IAppointmentService
             query = query.Where(a => a.Patient.Id == patientId.Value);
         }
 
-        return query.ToListAsync();
+        return query.Include(a => a.Doctor).Include(a => a.Patient).ToListAsync();
     }
 
     public async Task<Appointment> DeleteAppointment(Guid id)

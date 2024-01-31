@@ -1,4 +1,5 @@
 ﻿using HmsAPI.DTO;
+using HmsAPI.DTO.ResponseDTO;
 using HmsLibrary.Data.DTO;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
@@ -17,9 +18,18 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetAppointment(int id)
+    public async Task<IActionResult> GetAppointment(Guid id)
     {
-        throw new NotImplementedException();
+        var appointment = await _appointmentService.GetAppointment(id);
+
+        if (appointment == null)
+        {
+            return NotFound();
+        }
+
+        var result = AppointmentResponse.FromAppointment(appointment);
+
+        return Ok(result);
     }
 
     [HttpPost]
@@ -40,7 +50,9 @@ public class AppointmentController : ControllerBase
             Notes = request.Notes
         };
 
-        var result = await _appointmentService.CreateAppointment(appointment);
+        var createdAppointment = await _appointmentService.CreateAppointment(appointment);
+
+        var result = AppointmentResponse.FromAppointment(createdAppointment);
 
         return Ok(result);
     }
@@ -48,7 +60,11 @@ public class AppointmentController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllAppointments()
     {
-        return Ok(await _appointmentService.GetAllAppointments());
+        var appointments = await _appointmentService.GetAllAppointments();
+
+        var result = appointments.Select(AppointmentResponse.FromAppointment);
+
+        return Ok(result);
     }
 
     [HttpGet("search")]
@@ -60,7 +76,27 @@ public class AppointmentController : ControllerBase
         try
         {
             // Your logic for fetching appointments based on criteria
-            var result = await _appointmentService.GetAppointmentsByCriteria(date, doctorId, patientId);
+            var appointmentList = await _appointmentService.GetAppointmentsByCriteria(date, doctorId, patientId);
+
+            var result = appointmentList.Select(AppointmentResponse.FromAppointment);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception or handle it based on your application's requirements
+            return StatusCode(500, "Internal Server Error");
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAppointment(Guid id)
+    {
+        try
+        {
+            var appointment = await _appointmentService.DeleteAppointment(id);
+
+            var result = AppointmentResponse.FromAppointment(appointment);
 
             return Ok(result);
         }
