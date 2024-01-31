@@ -286,4 +286,28 @@ public class AppointmentTests
         Assert.That(fetchedAppointments, Is.Not.Null);
         Assert.That(fetchedAppointments, Has.Count.EqualTo(2));
     }
+
+    [Test]
+    public void DeleteAppointment()
+    {
+        var appointment = new Appointment
+        {
+            Date = DateTime.Now,
+            Doctor = doctor,
+            Patient = patient,
+        };
+
+        _dbContext.Appointments.Add(appointment);
+        _dbContext.SaveChanges();
+
+        var deletedAppointment = _appointmentService.DeleteAppointment(appointment.Id);
+
+        Assert.That(deletedAppointment, Is.Not.Null);
+    }
+
+    [Test]
+    public void DeleteAppointment_InvalidId()
+    {
+        Assert.ThrowsAsync<ArgumentException>(async () => await _appointmentService.DeleteAppointment(1));
+    }
 }

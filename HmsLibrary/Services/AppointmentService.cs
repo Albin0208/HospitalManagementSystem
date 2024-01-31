@@ -74,4 +74,12 @@ public class AppointmentService : IAppointmentService
         return query.ToListAsync();
     }
 
+    public async Task<Appointment> DeleteAppointment(int id)
+    {
+        var appointment = await _dbContext.Appointments.FindAsync(id) ?? throw new ArgumentException($"Appointment with ID {id} not found.", nameof(id));
+        _dbContext.Appointments.Remove(appointment);
+        await _dbContext.SaveChangesAsync();
+
+        return appointment;
+    }
 }
