@@ -37,9 +37,25 @@ public class RoleService : IRoleService
             throw new ArgumentException("EmployeeRole name cannot be empty or null.", nameof(employeeRole.RoleName));
         }
 
+        // Check if role already exists
+        if (await _dbContext.Roles.AnyAsync(r => r.RoleName == employeeRole.RoleName))
+        {
+            throw new ArgumentException($"EmployeeRole with name {employeeRole.RoleName} already exists.", nameof(employeeRole.RoleName));
+        }
+
         await _dbContext.Roles.AddAsync(employeeRole);
         await _dbContext.SaveChangesAsync();
 
         return employeeRole;
+    }
+
+    public async Task<EmployeeRole> DeleteRole(int id)
+    {
+        var role = await _dbContext.Roles.FindAsync(id) ?? throw new ArgumentException($"Role with ID {id} not found.", nameof(id));
+
+        _dbContext.Roles.Remove(role);
+        await _dbContext.SaveChangesAsync();
+
+        return role;
     }
 }

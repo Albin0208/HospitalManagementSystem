@@ -7,4 +7,5 @@ public interface IRoleService
     Task<List<EmployeeRole>> GetRoles();
     Task<EmployeeRole?> GetRole(int id);
     Task<EmployeeRole> CreateRole(EmployeeRole employeeRole);
+    Task<EmployeeRole> DeleteRole(int id);
 }
