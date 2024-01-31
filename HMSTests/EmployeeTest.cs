@@ -100,4 +100,35 @@ public class EmployeeTest
 
         Assert.ThrowsAsync<ArgumentException>(async () => await _employeeService.CreateEmployee(employee));
     }
+
+    [Test]
+    public void DeleteEmployee()
+    {
+        var employee = new Employee
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Username = "john.doe",
+            Password = "test",
+            DateOfBirth = DateTime.Parse("1994-12-01"),
+            PhoneNumber = "123123123",
+            Address = "Street 2",
+            City = "Fake city",
+            ZipCode = "12312",
+            Country = "Fake country",
+        };
+
+        _dbContext.Employees.Add(employee);
+        _dbContext.SaveChanges();
+
+        var deletedEmployee = _employeeService.DeleteEmployee(employee.Id);
+
+        Assert.That(deletedEmployee, Is.Not.Null);
+    }
+
+    [Test]
+    public void DeleteNoneExistingEmployee()
+    {
+        Assert.ThrowsAsync<ArgumentException>(async () => await _employeeService.DeleteEmployee(1));
+    }
 }
