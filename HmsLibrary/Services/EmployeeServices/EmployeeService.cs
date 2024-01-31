@@ -22,7 +22,7 @@ public class EmployeeService : IEmployeeService
         return _dbContext.Employees.Include(e => e.Role).ToListAsync();
     }
 
-    public Task<Employee?> GetEmployee(int id)
+    public Task<Employee?> GetEmployee(Guid id)
     {
         return _dbContext.Employees.Include(e => e.Role).FirstOrDefaultAsync(e => e.Id == id);
     }
@@ -41,10 +41,10 @@ public class EmployeeService : IEmployeeService
             throw new ArgumentException("Lastname cannot be empty or null.", nameof(employee.LastName));
         }
 
-        if (employee.RoleId <= 0)
-        {
-            throw new ArgumentException("RoleId must be greater than 0.", nameof(employee.RoleId));
-        }
+        //if (employee.RoleId <= 0)
+        //{
+        //    throw new ArgumentException("RoleId must be greater than 0.", nameof(employee.RoleId));
+        //}
 
         // Retrieve the employeeRole from the database based on RoleId
         var role = await _dbContext.Roles.FindAsync(employee.RoleId) ?? throw new ArgumentException($"Role with ID {employee.RoleId} not found.", nameof(employee.RoleId));
@@ -61,7 +61,7 @@ public class EmployeeService : IEmployeeService
         throw new NotImplementedException();
     }
 
-    public async Task<Employee> DeleteEmployee(int id)
+    public async Task<Employee> DeleteEmployee(Guid id)
     {
         var employee = await _dbContext.Employees.FindAsync(id) ?? throw new ArgumentException($"Employee with ID {id} not found.", nameof(id));
         _dbContext.Employees.Remove(employee);

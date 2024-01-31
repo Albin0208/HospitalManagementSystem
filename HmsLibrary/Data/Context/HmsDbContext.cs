@@ -37,10 +37,10 @@ public class HmsDbContext : DbContext
 
         // Seed default roles
         modelBuilder.Entity<EmployeeRole>().HasData(
-            new EmployeeRole { Id = 1, RoleName = "Admin" },
-            new EmployeeRole { Id = 2, RoleName = "Doctor" },
-            new EmployeeRole { Id = 3, RoleName = "Nurse" },
-            new EmployeeRole { Id = 4, RoleName = "Receptionist" }
+            new EmployeeRole { Id = Guid.NewGuid(), RoleName = "Admin" },
+            new EmployeeRole { Id = Guid.NewGuid(), RoleName = "Doctor" },
+            new EmployeeRole { Id = Guid.NewGuid(), RoleName = "Nurse" },
+            new EmployeeRole { Id = Guid.NewGuid(), RoleName = "Receptionist" }
         );
 
         modelBuilder.Entity<Employee>()

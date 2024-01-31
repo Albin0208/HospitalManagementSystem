@@ -1,4 +1,5 @@
 ﻿using HmsAPI.DTO;
+using HmsAPI.DTO.RequestDTO;
 using HmsAPI.DTO.ResponseDTO;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
@@ -59,7 +60,7 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetEmployee(int id)
+    public async Task<IActionResult> GetEmployee(Guid id)
     {
         var employee = await _employeeService.GetEmployee(id);
 
@@ -74,7 +75,7 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteEmployee(int id)
+    public async Task<IActionResult> DeleteEmployee(Guid id)
     {
         try
         {

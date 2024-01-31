@@ -14,7 +14,7 @@ public class Employee : BaseEntity
     [Required]
     public string Password { get; set; }
     //[Required]
-    public int RoleId { get; set; }
+    public Guid RoleId { get; set; }
     public EmployeeRole Role { get; set; } = null!;
     [Required, MaxLength(30)]
     public string FirstName { get; set; }

@@ -96,71 +96,56 @@ public class RoleTests
     }
 
     [Test]
-    [TestCase(1)]
-    [TestCase(2)]
-    [TestCase(3)]
-    [TestCase(4)]
-    public async Task GetRoleAsync(int id)
+    public async Task GetRoleAsync()
     {
         var roles = CreateRoles();
 
         await _dbContext.Roles.AddRangeAsync(roles);
         await _dbContext.SaveChangesAsync();
 
-        var result = await _roleService.GetRole(id);
+        // Get a list of all the roles
+        var createdRoles = _dbContext.Roles.ToList();
+
+        var result = await _roleService.GetRole(createdRoles[0].Id);
 
         Assert.That(result, Is.Not.Null);
 
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.RoleName, Is.EqualTo(roles[id - 1].RoleName));
-        });
+        Assert.That(result.RoleName, Is.EqualTo(createdRoles[0].RoleName));
     }
 
     [Test]
-    [TestCase(5)]
-    [TestCase(6)]
-    [TestCase(7)]
-    [TestCase(8)]
-    public async Task GetRoleAsync_InvalidId(int id)
+    public async Task GetRoleAsync_InvalidId()
     {
         var roles = CreateRoles();
         await _dbContext.Roles.AddRangeAsync(roles);
         await _dbContext.SaveChangesAsync();
 
-        var result = await _roleService.GetRole(id);
+        var result = await _roleService.GetRole(new Guid());
 
         Assert.That(result, Is.Null);
     }
 
     [Test]
-    [TestCase(1)]
-    [TestCase(2)]
-    [TestCase(3)]
-    [TestCase(4)]
-    public async Task DeleteRoleAsync(int id)
+    public async Task DeleteRoleAsync()
     {
         var roles = CreateRoles();
 
         await _dbContext.Roles.AddRangeAsync(roles);
         await _dbContext.SaveChangesAsync();
 
-        var result = await _roleService.DeleteRole(id);
+        var createdRoles = _dbContext.Roles.ToList();
+
+        var result = await _roleService.DeleteRole(createdRoles[0].Id);
 
         Assert.That(result, Is.Not.Null);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.RoleName, Is.EqualTo(roles[id - 1].RoleName));
-        });
+        
+        Assert.That(result.RoleName, Is.EqualTo(createdRoles[0].RoleName));
     }
 
     [Test]
-    [TestCase(5)]
-    [TestCase(6)]
-    [TestCase(7)]
-    [TestCase(8)]
-    public async Task DeleteRoleAsync_InvalidId(int id)
+    [TestCase("00000000-0000-0000-0000-000000000001")] // Sample invalid ID
+    [TestCase("00000000-0000-0000-0000-000000000002")]
+    public async Task DeleteRoleAsync_InvalidId(Guid id)
     {
         var roles = CreateRoles();
 

@@ -4,7 +4,7 @@ namespace HmsAPI.DTO.ResponseDTO;
 
 public class RoleResponse
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string RoleName { get; set; } = "";
 
     public static RoleResponse FromRole(EmployeeRole role)

@@ -43,7 +43,7 @@ public class EmployeeTest
     [TestCase("John", "Doe", "john.doe", "test", "1994-12-01", "123123123", "Street 2", "Fake city", "12312", "Fake country", "Admin")]
     [TestCase("Jane", "Smith", "jane.smith", "test", "1994-12-01", "123123123", "Street 2", "Fake city", "12312", "Fake country", "doctor")]
     [TestCase("Jane", "Smith", "jane.smith", "test", null, null, null, null, null, null, "nurse")]
-    public async Task CreateEmployeeAsync(string? firstname, string? lastname, string? username, string? password, 
+    public async Task CreateEmployeeAsync(string? firstname, string? lastname, string? username, string? password,
         string? dateOfBirth, string? phoneNumber, string? address, string? city, string? zipCode, string? country, string? roleName)
     {
         var parsedDateOfBirth = dateOfBirth == null ? default : DateTime.Parse(dateOfBirth);
@@ -84,7 +84,7 @@ public class EmployeeTest
     public void CreateEmployeeWithNoneExistingRole()
     {
         var employee = new Employee
-                {
+        {
             FirstName = "John",
             LastName = "Doe",
             Username = "john.doe",
@@ -95,7 +95,7 @@ public class EmployeeTest
             City = "Fake city",
             ZipCode = "12312",
             Country = "Fake country",
-            RoleId = 1,
+            RoleId = new Guid(),
         };
 
         Assert.ThrowsAsync<ArgumentException>(async () => await _employeeService.CreateEmployee(employee));
@@ -129,6 +129,6 @@ public class EmployeeTest
     [Test]
     public void DeleteNoneExistingEmployee()
     {
-        Assert.ThrowsAsync<ArgumentException>(async () => await _employeeService.DeleteEmployee(1));
+        Assert.ThrowsAsync<ArgumentException>(async () => await _employeeService.DeleteEmployee(new Guid()));
     }
 }

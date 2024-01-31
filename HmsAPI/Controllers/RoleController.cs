@@ -29,7 +29,7 @@ public class RoleController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetRole(int id)
+    public async Task<IActionResult> GetRole(Guid id)
     {
         var role = await _roleService.GetRole(id);
 
@@ -63,5 +63,14 @@ public class RoleController : ControllerBase
         return Ok(response);
     }
 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRole(Guid id)
+    {
+        var role = await _roleService.DeleteRole(id);
+
+        var response = RoleResponse.FromRole(role);
+
+        return Ok(response);
+    }
 
 }

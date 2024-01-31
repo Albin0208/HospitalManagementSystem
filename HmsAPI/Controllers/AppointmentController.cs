@@ -54,8 +54,8 @@ public class AppointmentController : ControllerBase
     [HttpGet("search")]
     public async Task<IActionResult> GetAppointmentsByCriteria(
         [FromQuery] DateTime? date,
-        [FromQuery(Name = "doctorId")] int? doctorId,
-        [FromQuery(Name = "patientId")] int? patientId)
+        [FromQuery(Name = "doctorId")] Guid? doctorId,
+        [FromQuery(Name = "patientId")] Guid? patientId)
     {
         try
         {

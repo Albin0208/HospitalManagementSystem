@@ -42,7 +42,7 @@ public class AppointmentService : IAppointmentService
         return newAppointment;
     }
 
-    public Task<Appointment?> GetAppointment(int id)
+    public Task<Appointment?> GetAppointment(Guid id)
     {
         return _dbContext.Appointments.FirstOrDefaultAsync(a => a.Id == id);
     }
@@ -52,7 +52,7 @@ public class AppointmentService : IAppointmentService
         return _dbContext.Appointments.ToListAsync();
     }
 
-    public Task<List<Appointment>> GetAppointmentsByCriteria(DateTime? date, int? doctorId, int? patientId)
+    public Task<List<Appointment>> GetAppointmentsByCriteria(DateTime? date, Guid? doctorId, Guid? patientId)
     {
         IQueryable<Appointment> query = _dbContext.Appointments;
 
@@ -61,12 +61,12 @@ public class AppointmentService : IAppointmentService
             query = query.Where(a => a.Date.Date == date.Value.Date);
         }
 
-        if (doctorId.HasValue)
+        if (doctorId.HasValue && doctorId != Guid.Empty)
         {
             query = query.Where(a => a.Doctor.Id == doctorId.Value);
         }
 
-        if (patientId.HasValue)
+        if (patientId.HasValue && patientId != Guid.Empty)
         {
             query = query.Where(a => a.Patient.Id == patientId.Value);
         }
@@ -74,7 +74,7 @@ public class AppointmentService : IAppointmentService
         return query.ToListAsync();
     }
 
-    public async Task<Appointment> DeleteAppointment(int id)
+    public async Task<Appointment> DeleteAppointment(Guid id)
     {
         var appointment = await _dbContext.Appointments.FindAsync(id) ?? throw new ArgumentException($"Appointment with ID {id} not found.", nameof(id));
         _dbContext.Appointments.Remove(appointment);

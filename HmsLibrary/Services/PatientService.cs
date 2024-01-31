@@ -19,13 +19,8 @@ public class PatientService : IPatientService
     }
 
     /// <inheritdoc />
-    public Task<Patient?> GetPatient(int id)
+    public Task<Patient?> GetPatient(Guid id)
     {
-        if (id <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(id));
-        }
-
         return _dbContext.Patients.FirstOrDefaultAsync(p => p.Id == id);
     }
 

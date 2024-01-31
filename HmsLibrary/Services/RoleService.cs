@@ -23,7 +23,7 @@ public class RoleService : IRoleService
         return _dbContext.Roles.ToListAsync();
     }
 
-    public Task<EmployeeRole?> GetRole(int id)
+    public Task<EmployeeRole?> GetRole(Guid id)
     {
         return _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == id);
     }
@@ -49,7 +49,8 @@ public class RoleService : IRoleService
         return employeeRole;
     }
 
-    public async Task<EmployeeRole> DeleteRole(int id)
+    /// <inheritdoc />
+    public async Task<EmployeeRole> DeleteRole(Guid id)
     {
         var role = await _dbContext.Roles.FindAsync(id) ?? throw new ArgumentException($"Role with ID {id} not found.", nameof(id));
 

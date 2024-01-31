@@ -10,7 +10,9 @@ namespace HmsLibrary.Data.Model;
 
 public abstract class BaseEntity
 {
-    public int Id { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public Guid Id { get; set; }
     [Timestamp]
     public DateTime CreatedAt { get; set; }
     [Timestamp]

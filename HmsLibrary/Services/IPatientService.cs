@@ -9,7 +9,7 @@ public interface IPatientService
     /// </summary>
     /// <param name="id">The patient id</param>
     /// <returns>The patient if they exist</returns>
-    Task<Patient?> GetPatient(int id);
+    Task<Patient?> GetPatient(Guid id);
     /// <summary>
     /// Create a new patient in the database
     /// </summary>

@@ -42,7 +42,7 @@ namespace HmsAPI.Controllers
         /// <param name="id">The ID of the patient to retrieve</param>
         /// <returns>The patient with the ID</returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPatient(int id)
+        public async Task<IActionResult> GetPatient(Guid id)
         {
             var patient = await _patientService.GetPatient(id);
 
