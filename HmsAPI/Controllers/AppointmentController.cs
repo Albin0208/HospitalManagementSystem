@@ -48,7 +48,7 @@ public class AppointmentController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllAppointments()
     {
-        throw new NotImplementedException();
+        return Ok(await _appointmentService.GetAllAppointments());
     }
 
     [HttpGet("search")]
