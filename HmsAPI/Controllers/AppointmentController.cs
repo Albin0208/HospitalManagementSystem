@@ -82,7 +82,7 @@ public class AppointmentController : ControllerBase
 
             return Ok(result);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Log the exception or handle it based on your application's requirements
             return StatusCode(500, "Internal Server Error");
@@ -100,7 +100,7 @@ public class AppointmentController : ControllerBase
 
             return Ok(result);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Log the exception or handle it based on your application's requirements
             return StatusCode(500, "Internal Server Error");

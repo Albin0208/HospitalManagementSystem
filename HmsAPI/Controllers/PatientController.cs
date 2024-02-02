@@ -89,7 +89,7 @@ namespace HmsAPI.Controllers
 
                 return Ok(patient);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 return NotFound();
             }
