@@ -156,13 +156,13 @@ public class PatientTests
     }
 
     [Test]
-    public async Task CreatePatientAsync_NullPatient()
+    public void CreatePatientAsync_NullPatient()
     {
         Assert.ThrowsAsync<ArgumentNullException>(async () => await _patientService.CreatePatient(null!));
     }
 
     [Test]
-    public async Task CreatePatientAsync_NullFirstName()
+    public void CreatePatientAsync_NullFirstName()
     {
         var patient = new Patient
         {
@@ -241,13 +241,14 @@ public class PatientTests
         _dbContext.Patients.Add(patient);
         await _dbContext.SaveChangesAsync();
 
-        var deleted = await _patientService.DeletePatient(patient.Id);
+        var p = await _patientService.DeletePatient(patient.Id);
 
-        Assert.That(deleted, Is.True);
+        Assert.That(p, Is.Not.Null);
+        Assert.That(p.Id, Is.EqualTo(patient.Id));
     }
 
     [Test]
-    public async Task DeletePatientAsync_InvalidId()
+    public void DeletePatientAsync_InvalidId()
     {
         Assert.ThrowsAsync<ArgumentException>(async () => await _patientService.DeletePatient(new Guid()));
     }
