@@ -19,6 +19,7 @@ public class RoleController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType<RoleResponse>(200)]
     public async Task<IActionResult> GetRoles()
     {
         var roles = await _roleService.GetRoles();
@@ -29,6 +30,7 @@ public class RoleController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType<RoleResponse>(200)]
     public async Task<IActionResult> GetRole(Guid id)
     {
         var role = await _roleService.GetRole(id);
@@ -44,6 +46,7 @@ public class RoleController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType<RoleResponse>(200)]
     public async Task<IActionResult> CreateRole([FromBody] RoleRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.RoleName))
@@ -63,7 +66,13 @@ public class RoleController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Delete a role
+    /// </summary>
+    /// <param name="id">The guid of the role to be deleted</param>
+    /// <returns></returns>
     [HttpDelete("{id}")]
+    [ProducesResponseType<RoleResponse>(200)]
     public async Task<IActionResult> DeleteRole(Guid id)
     {
         var role = await _roleService.DeleteRole(id);

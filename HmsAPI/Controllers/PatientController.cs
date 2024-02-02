@@ -57,7 +57,7 @@ namespace HmsAPI.Controllers
         /// <summary>
         /// Creates a new patient.
         /// </summary>
-        /// <param name="patient">The patient information to create.</param>
+        /// <param name="request">The patient information to create.</param>
         /// <returns>The created patient.</returns>
         [HttpPost]
         public async Task<IActionResult> CreatePatient([FromBody] PatientRequest request)
@@ -78,6 +78,26 @@ namespace HmsAPI.Controllers
             var createdPatient = await _patientService.CreatePatient(patient);
 
             return Created("patient", createdPatient);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeletePatient(Guid id)
+        {
+            try
+            {
+                var patient = await _patientService.DeletePatient(id);
+
+                return Ok(patient);
+            }
+            catch (ArgumentException e)
+            {
+                return NotFound();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+            }
+
         }
     }
 }

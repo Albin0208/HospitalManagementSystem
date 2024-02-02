@@ -227,4 +227,28 @@ public class PatientTests
             Assert.That(updatedPatient.Country, Is.EqualTo(changedPatient.Country));
         });
     }
+
+    [Test]
+    public async Task DeletePatientAsync()
+    {
+        var patient = new Patient
+        {
+            FirstName = "Jake",
+            LastName = "Doe",
+            Address = "123 Fake"
+        };
+
+        _dbContext.Patients.Add(patient);
+        await _dbContext.SaveChangesAsync();
+
+        var deleted = await _patientService.DeletePatient(patient.Id);
+
+        Assert.That(deleted, Is.True);
+    }
+
+    [Test]
+    public async Task DeletePatientAsync_InvalidId()
+    {
+        Assert.ThrowsAsync<ArgumentException>(async () => await _patientService.DeletePatient(new Guid()));
+    }
 }

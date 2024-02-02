@@ -69,4 +69,14 @@ public class PatientService : IPatientService
 
         return patient;
     }
+
+    public async Task<Patient> DeletePatient(Guid id)
+    {
+        var patient = await _dbContext.Patients.FirstOrDefaultAsync(p => p.Id == id) ?? throw new ArgumentException("Patient does not exist.", nameof(id));
+
+        _dbContext.Patients.Remove(patient);
+        await _dbContext.SaveChangesAsync();
+
+        return patient;
+    }
 }

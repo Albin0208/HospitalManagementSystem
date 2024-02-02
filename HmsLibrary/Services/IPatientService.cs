@@ -29,4 +29,11 @@ public interface IPatientService
     /// <param name="patient">The patient with the modified fields</param>
     /// <returns>The modified patient</returns>
     Task<Patient> UpdatePatient(Patient patient);
+
+    /// <summary>
+    /// Delete the patient with the given id from the database
+    /// </summary>
+    /// <param name="id">The id of the patient</param>
+    /// <returns>If the patient was successfully deleted</returns>
+    Task<Patient> DeletePatient(Guid id);
 }
