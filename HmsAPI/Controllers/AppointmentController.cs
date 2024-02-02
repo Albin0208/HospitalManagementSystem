@@ -41,7 +41,7 @@ public class AppointmentController : ControllerBase
             return BadRequest("Required fields are missing");
         }
 
-        var appointment = new AppointmentDTO
+        var appointment = new AppointmentDto
         {
             Date = request.Date,
             DoctorId = request.DoctorId,

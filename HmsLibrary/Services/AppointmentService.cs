@@ -19,7 +19,7 @@ public class AppointmentService : IAppointmentService
         _dbContext = context;
     }
 
-    public async Task<Appointment> CreateAppointment(AppointmentDTO appointment)
+    public async Task<Appointment> CreateAppointment(AppointmentDto appointment)
     {
         // Check if the doctor exists
         var doctor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.Id == appointment.DoctorId) ?? throw new ArgumentException("Doctor does not exist or is not specified", nameof(appointment));
@@ -84,5 +84,38 @@ public class AppointmentService : IAppointmentService
         await _dbContext.SaveChangesAsync();
 
         return appointment;
+    }
+
+    public async Task<Appointment> UpdateAppointment(AppointmentDto appointment)
+    {
+        var dbAppointment = await _dbContext.Appointments.FindAsync(appointment.Id) ?? throw new ArgumentException($"Appointment with ID {appointment.Id} not found.", nameof(appointment.Id));
+
+        // Check if the doctor exists if the doctor has changed
+        if (dbAppointment.Doctor.Id != appointment.DoctorId)
+        {
+            var doctor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.Id == appointment.DoctorId) 
+                         ?? throw new ArgumentException("Doctor does not exist or is not specified", nameof(appointment));
+
+            dbAppointment.Doctor = doctor;
+        }
+
+        // Check if the patient exists if the patient has changed
+        if (dbAppointment.Patient.Id != appointment.PatientId)
+        {
+            var patient = await _dbContext.Patients.FirstOrDefaultAsync(p => p.Id == appointment.PatientId) 
+                          ?? throw new ArgumentException("Patient does not exist or is not specified", nameof(appointment));
+
+            dbAppointment.Patient = patient;
+        }
+
+        // Update all none null fields
+        dbAppointment.Date = appointment.Date;
+        dbAppointment.Reason = appointment.Reason;
+        dbAppointment.Notes = appointment.Notes;
+
+        _dbContext.Appointments.Update(dbAppointment);
+        await _dbContext.SaveChangesAsync();
+
+        return dbAppointment;
     }
 }

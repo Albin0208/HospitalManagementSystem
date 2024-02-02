@@ -79,7 +79,7 @@ public class AppointmentTests
     {
 
 
-        var appointment = new AppointmentDTO
+        var appointment = new AppointmentDto
         {
             Date = DateTime.Now,
             DoctorId = doctor.Id,
@@ -101,7 +101,7 @@ public class AppointmentTests
     [Test]
     public Task CreateAppointmentAsync_ThrowsArgumentException()
     {
-        var appointment = new AppointmentDTO
+        var appointment = new AppointmentDto
         {
             Date = DateTime.Now,
         };
@@ -333,5 +333,87 @@ public class AppointmentTests
     public void DeleteAppointment_InvalidId()
     {
         Assert.ThrowsAsync<ArgumentException>(async () => await _appointmentService.DeleteAppointment(new Guid()));
+    }
+
+    [Test]
+    [TestCase("2021-01-01", 1, 1)]
+    [TestCase("2021-01-01", null, null)]
+    [TestCase(null, 1, null)]
+    [TestCase(null, null, 1)]
+    public async Task UpdateAppointmentAsync(DateTime? date, int? doctorId, int? patientId)
+    {
+        var d = doctor;
+        var p = patient;
+
+        var appointment = new Appointment
+        {
+            Date = DateTime.Now,
+            Doctor = doctor,
+            Patient = patient,
+        };
+
+        await _dbContext.Appointments.AddAsync(appointment);
+        await _dbContext.SaveChangesAsync();
+
+        var changedAppointment = new AppointmentDto
+        {
+            Id = appointment.Id,
+            Date = date ?? appointment.Date,
+            DoctorId = doctor.Id,
+            PatientId = patient.Id,
+        };
+
+        if (doctorId.HasValue)
+        {
+            d = new Doctor
+            {
+                FirstName = "John",
+                LastName = "Doe",
+                Username = "john.doe",
+                Password = "test",
+                DateOfBirth = DateTime.Parse("1994-12-01"),
+                PhoneNumber = "123123123",
+                Address = "Street 2",
+                City = "Fake city",
+                ZipCode = "12312",
+                Country = "Fake country",
+            };
+
+            await _dbContext.Employees.AddAsync(d);
+            await _dbContext.SaveChangesAsync();
+
+            changedAppointment.DoctorId = d.Id;
+        }
+
+        if (patientId.HasValue)
+        {
+            p = new Patient
+            {
+                FirstName = "Jane",
+                LastName = "Smith",
+                Email = "jane.smith",
+                DateOfBirth = DateTime.Parse("1994-12-01"),
+                PhoneNumber = "123123123",
+                Address = "Street 2",
+                City = "Fake city",
+                ZipCode = "12312",
+                Country = "Fake country",
+            };
+
+            await _dbContext.Patients.AddAsync(p);
+            await _dbContext.SaveChangesAsync();
+
+            changedAppointment.PatientId = p.Id;
+        }
+
+        var updatedAppointment = await _appointmentService.UpdateAppointment(changedAppointment);
+
+        Assert.That(updatedAppointment, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(updatedAppointment.Date, Is.EqualTo(changedAppointment.Date));
+            Assert.That(updatedAppointment.Doctor, Is.EqualTo(d));
+            Assert.That(updatedAppointment.Patient, Is.EqualTo(p));
+        });
     }
 }

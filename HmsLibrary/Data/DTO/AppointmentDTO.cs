@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HmsLibrary.Data.DTO;
 
-public class AppointmentDTO
+public class AppointmentDto
 {
     public Guid? Id { get; set; }
     public Guid PatientId { get; set; }
