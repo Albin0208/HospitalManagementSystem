@@ -29,8 +29,8 @@ public class AppointmentService : IAppointmentService
 
         var newAppointment = new Appointment
         {
-            Date = appointment.Date,
-            Reason = appointment.Reason,
+            Date = (DateTime)appointment.Date!,
+            Reason = appointment.Reason!,
             Notes = appointment.Notes,
             Doctor = doctor,
             Patient = patient
@@ -88,10 +88,12 @@ public class AppointmentService : IAppointmentService
 
     public async Task<Appointment> UpdateAppointment(AppointmentDto appointment)
     {
-        var dbAppointment = await _dbContext.Appointments.FindAsync(appointment.Id) ?? throw new ArgumentException($"Appointment with ID {appointment.Id} not found.", nameof(appointment.Id));
+        var dbAppointment = await _dbContext.Appointments.Include(a => a.Doctor)
+            .Include(a => a.Patient)
+            .FirstAsync(a => a.Id == appointment.Id) ?? throw new ArgumentException($"Appointment with ID {appointment.Id} not found.", nameof(appointment.Id));
 
         // Check if the doctor exists if the doctor has changed
-        if (dbAppointment.Doctor.Id != appointment.DoctorId)
+        if (appointment.DoctorId != null && dbAppointment.Doctor.Id != appointment.DoctorId)
         {
             var doctor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.Id == appointment.DoctorId) 
                          ?? throw new ArgumentException("Doctor does not exist or is not specified", nameof(appointment));
@@ -100,7 +102,7 @@ public class AppointmentService : IAppointmentService
         }
 
         // Check if the patient exists if the patient has changed
-        if (dbAppointment.Patient.Id != appointment.PatientId)
+        if (appointment.PatientId != null && dbAppointment.Patient.Id != appointment.PatientId)
         {
             var patient = await _dbContext.Patients.FirstOrDefaultAsync(p => p.Id == appointment.PatientId) 
                           ?? throw new ArgumentException("Patient does not exist or is not specified", nameof(appointment));
@@ -109,9 +111,12 @@ public class AppointmentService : IAppointmentService
         }
 
         // Update all none null fields
-        dbAppointment.Date = appointment.Date;
-        dbAppointment.Reason = appointment.Reason;
-        dbAppointment.Notes = appointment.Notes;
+        if (appointment.Date != null)
+            dbAppointment.Date = (DateTime)appointment.Date;
+        if (appointment.Reason != null)
+            dbAppointment.Reason = appointment.Reason;
+        if (appointment.Notes != null)
+            dbAppointment.Notes = appointment.Notes;
 
         _dbContext.Appointments.Update(dbAppointment);
         await _dbContext.SaveChangesAsync();

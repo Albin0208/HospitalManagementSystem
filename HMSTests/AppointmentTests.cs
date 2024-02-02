@@ -77,11 +77,10 @@ public class AppointmentTests
     [Test]
     public async Task CreateAppointmentAsync()
     {
-
-
         var appointment = new AppointmentDto
         {
             Date = DateTime.Now,
+            Reason = "Checkup",
             DoctorId = doctor.Id,
             PatientId = patient.Id,
         };

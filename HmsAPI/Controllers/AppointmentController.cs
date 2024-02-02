@@ -106,4 +106,32 @@ public class AppointmentController : ControllerBase
             return StatusCode(500, "Internal Server Error");
         }
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAppointment(Guid id, [FromBody] AppointmentRequest request)
+    {
+        try
+        {
+            var appointment = new AppointmentDto
+            {
+                Id = id,
+                Date = request.Date,
+                DoctorId = request.DoctorId,
+                PatientId = request.PatientId,
+                Reason = request.Reason,
+                Notes = request.Notes
+            };
+
+            var updatedAppointment = await _appointmentService.UpdateAppointment(appointment);
+
+            var result = AppointmentResponse.FromAppointment(updatedAppointment);
+
+            return Ok(result);
+        }
+        catch (Exception)
+        {
+            // Log the exception or handle it based on your application's requirements
+            return StatusCode(500, "Internal Server Error");
+        }
+    }
 }
