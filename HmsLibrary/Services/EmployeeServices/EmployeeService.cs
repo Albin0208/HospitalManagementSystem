@@ -12,9 +12,11 @@ namespace HmsLibrary.Services.EmployeeServices;
 public class EmployeeService : IEmployeeService
 {
     private readonly HmsDbContext _dbContext;
-    public EmployeeService(HmsDbContext dbContext)
+    private readonly IRoleService _roleService;
+    public EmployeeService(HmsDbContext dbContext, IRoleService roleService)
     {
         _dbContext = dbContext;
+        _roleService = roleService;
     }
 
     public Task<List<Employee>> GetEmployees()
@@ -41,13 +43,8 @@ public class EmployeeService : IEmployeeService
             throw new ArgumentException("Lastname cannot be empty or null.", nameof(employee.LastName));
         }
 
-        //if (employee.RoleId <= 0)
-        //{
-        //    throw new ArgumentException("RoleId must be greater than 0.", nameof(employee.RoleId));
-        //}
-
         // Retrieve the employeeRole from the database based on RoleId
-        var role = await _dbContext.Roles.FindAsync(employee.RoleId) ?? throw new ArgumentException($"Role with ID {employee.RoleId} not found.", nameof(employee.RoleId));
+        var role = await _roleService.GetRole(employee.RoleId) ?? throw new ArgumentException($"Role with ID {employee.RoleId} not found.", nameof(employee.RoleId));
         employee.Role = role;
 
         await _dbContext.Employees.AddAsync(employee);
@@ -56,9 +53,34 @@ public class EmployeeService : IEmployeeService
         return employee;
     }
 
-    public Task<Employee> UpdateEmployee(Employee employee)
+    public async Task<Employee> UpdateEmployee(Employee employee)
     {
-        throw new NotImplementedException();
+        var existingEmployee = await _dbContext.Employees.FindAsync(employee.Id) ?? throw new ArgumentException($"Employee with ID {employee.Id} not found.", nameof(employee.Id));
+
+        var properties = typeof(Employee).GetProperties();
+
+        foreach (var property in properties)
+        {
+            var newValue = property.GetValue(employee);
+
+            // If role is to update check if it exists
+            if (property.Name == "RoleId" && newValue != null && (Guid)newValue != Guid.Empty)
+            {
+                var role = await _roleService.GetRole((Guid)newValue) ?? throw new ArgumentException($"Role with ID {newValue} not found.", nameof(newValue));
+                existingEmployee.Role = role;
+                continue;
+            }
+
+            if (newValue != null)
+            {
+                property.SetValue(existingEmployee, newValue);
+            }
+        }
+
+
+        await _dbContext.SaveChangesAsync();
+
+        return existingEmployee;
     }
 
     public async Task<Employee> DeleteEmployee(Guid id)

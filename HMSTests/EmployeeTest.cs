@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using HmsLibrary.Data.Context;
 using HmsLibrary.Data.Model;
+using HmsLibrary.Services;
 using HmsLibrary.Services.EmployeeServices;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +15,8 @@ namespace HMSTests;
 public class EmployeeTest
 {
     private HmsDbContext _dbContext;
-    private EmployeeService _employeeService;
+    private IEmployeeService _employeeService;
+    private IRoleService _roleService;
 
     [SetUp]
     public void Setup()
@@ -26,7 +29,9 @@ public class EmployeeTest
         _dbContext = new HmsDbContext(options);
         _dbContext.Database.EnsureDeleted(); // Delete database before each test
 
-        _employeeService = new EmployeeService(_dbContext);
+        _roleService = new RoleService(_dbContext);
+
+        _employeeService = new EmployeeService(_dbContext, _roleService);
 
         // Setup service
 
@@ -62,13 +67,12 @@ public class EmployeeTest
             Country = country,
         };
 
-
-
         if (roleName != null)
         {
             var role = new EmployeeRole { RoleName = roleName };
 
             var id = await _dbContext.Roles.AddAsync(role);
+            await _dbContext.SaveChangesAsync();
 
             employee.RoleId = id.Entity.Id; // Create a new employeeRole;
         }
@@ -130,5 +134,112 @@ public class EmployeeTest
     public void DeleteNoneExistingEmployee()
     {
         Assert.ThrowsAsync<ArgumentException>(async () => await _employeeService.DeleteEmployee(new Guid()));
+    }
+
+    [Test]
+    public async Task UpdateEmployee()
+    {
+        var employee = new Employee
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Username = "john.doe",
+            Password = "test",
+            DateOfBirth = DateTime.Parse("1994-12-01"),
+            PhoneNumber = "123123123",
+            Address = "Street 2",
+            City = "Fake city",
+            ZipCode = "12312",
+            Country = "Fake country",
+        };
+
+        await _dbContext.Employees.AddAsync(employee);
+        await _dbContext.SaveChangesAsync();
+
+        var updatedEmployee = new Employee
+        {
+            Id = employee.Id,
+            FirstName = "Jane",
+            LastName = "Smith",
+            Username = "jane.smith",
+            Password = "test",
+            DateOfBirth = DateTime.Parse("1994-12-01"),
+            PhoneNumber = "123123123",
+            Address = "Street 2",
+            City = "Fake city",
+            ZipCode = "12312",
+            Country = "Fake country",
+        };
+
+        var result = await _employeeService.UpdateEmployee(updatedEmployee);
+
+        Assert.That(result, Is.Not.Null);
+
+        Assert.That(result, Is.EqualTo(updatedEmployee));
+    }
+
+    [Test]
+    public async Task UpdateEmployeeWithFewFields()
+    {
+        var employee = new Employee
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Username = "john.doe",
+            Password = "test",
+            DateOfBirth = DateTime.Parse("1994-12-01"),
+            PhoneNumber = "123123123",
+            Address = "Street 2",
+            City = "Fake city",
+            ZipCode = "12312",
+            Country = "Fake country",
+        };
+
+        await _dbContext.Employees.AddAsync(employee);
+        await _dbContext.SaveChangesAsync();
+
+        var updatedEmployee = new Employee
+        {
+            Id = employee.Id,
+            PhoneNumber = "0001012302",
+            Address = "Road 4",
+            City = "Another city",
+            ZipCode = "55555",
+        };
+
+        var result = await _employeeService.UpdateEmployee(updatedEmployee);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Id, Is.EqualTo(updatedEmployee.Id));
+            Assert.That(result.FirstName, Is.EqualTo(employee.FirstName));
+            Assert.That(result.LastName, Is.EqualTo(employee.LastName));
+            Assert.That(result.PhoneNumber, Is.EqualTo(updatedEmployee.PhoneNumber));
+            Assert.That(result.Address, Is.EqualTo(updatedEmployee.Address));
+            Assert.That(result.City, Is.EqualTo(updatedEmployee.City));
+            Assert.That(result.ZipCode, Is.EqualTo(updatedEmployee.ZipCode));
+        });
+    }
+
+    [Test]
+    public void UpdateNoneExistingEmployee()
+    {
+        var employee = new Employee
+        {
+            Id = new Guid(),
+            FirstName = "John",
+            LastName = "Doe",
+            Username = "john.doe",
+            Password = "test",
+            DateOfBirth = DateTime.Parse("1994-12-01"),
+            PhoneNumber = "123123123",
+            Address = "Street 2",
+            City = "Fake city",
+            ZipCode = "12312",
+            Country = "Fake country",
+        };
+
+        Assert.ThrowsAsync<ArgumentException>(async () => await _employeeService.UpdateEmployee(employee));
     }
 }
