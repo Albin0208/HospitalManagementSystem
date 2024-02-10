@@ -4,14 +4,17 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using HmsAPI.Data;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Data.Model.Employees;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace HmsLibrary.Data.Context;
 
-public class HmsDbContext : DbContext
+public class HmsDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
     public HmsDbContext(DbContextOptions<HmsDbContext> options) : base(options) { }
 

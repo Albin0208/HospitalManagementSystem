@@ -1,6 +1,8 @@
+using HmsAPI.Data;
 using HmsLibrary.Data.Context;
 using HmsLibrary.Services;
 using HmsLibrary.Services.EmployeeServices;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,7 @@ builder.Services.AddDbContext<HmsDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
 });
+
 
 // Services registration
 builder.Services.AddTransient<IPatientService, PatientService>();
@@ -21,6 +24,15 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+    .AddEntityFrameworkStores<HmsDbContext>()
+    .AddDefaultTokenProviders();
+
+//builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+//    .AddEntityFrameworkStores<DataContext>();
 
 var app = builder.Build();
 

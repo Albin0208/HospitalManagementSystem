@@ -104,6 +104,7 @@ public class EmployeeController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateEmployee(Guid id, [FromBody] EmployeeRequest request)
     {
+        // TODO Add some role authorization here only admin can update roles. An employee can only update their own values except for role
         var employee = await _employeeService.GetEmployee(id);
 
         if (employee == null)
