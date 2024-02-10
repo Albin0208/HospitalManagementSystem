@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HmsAPI.Data;
+using HmsAPI.DTO.RequestDTO;
 using HmsLibrary.Data.Context;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
+using HmsLibrary.Services.EmployeeServices;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace HMSTests;
 
@@ -14,6 +19,8 @@ public class AuthenticationTests
 {
     private HmsDbContext _dbContext;
     private IAuthenticationService _authenticationService;
+    private Mock<UserManager<ApplicationUser>> _userManagerMock;
+    private Mock<IPatientService> _patientService;
 
     [SetUp]
     public void Setup()
@@ -26,8 +33,21 @@ public class AuthenticationTests
         _dbContext = new HmsDbContext(options);
         _dbContext.Database.EnsureDeleted();
 
+        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
+            Mock.Of<IUserStore<ApplicationUser>>(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
+
+        _patientService = new Mock<IPatientService>();
+
         // Setup service
-        _authenticationService = new AuthenticationService(_dbContext);
+        _authenticationService = new AuthenticationService(_dbContext, _userManagerMock.Object, _patientService.Object, new EmployeeService(_dbContext, new RoleService(_dbContext)));
     }
 
     [TearDown]
@@ -36,6 +56,32 @@ public class AuthenticationTests
         // Tear down database connection
         _dbContext.Dispose();
     }
+
+    //[Test]
+    //public async Task RegisterPatient_WithValidRequest_ReturnsSuccess()
+    //{
+    //    // Arrange
+    //    var request = new PatientRegisterRequest
+    //    {
+    //        Email = "test@example.com",
+    //        Password = "TestPassword",
+    //        FirstName = "John",
+    //        LastName = "Doe"
+    //        // Add more properties as needed
+    //    };
+
+    //    var user = new ApplicationUser { Id = "userId", UserName = request.Email, Email = request.Email };
+
+    //    _userManagerMock.Setup(m => m.CreateAsync(It.IsAny<ApplicationUser>(), request.Password))
+    //        .ReturnsAsync(IdentityResult.Success);
+    //    _patientService.Setup(m => m.CreatePatient(It.IsAny<Patient>())).ReturnsAsync(true);
+
+    //    // Act
+    //    var result = await _authenticationService.RegisterPatient(request);
+
+    //    // Assert
+    //    Assert.That(result.Succeeded, Is.True);
+    //}
 
     [Test]
     public void UserCreation()

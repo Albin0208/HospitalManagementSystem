@@ -7,6 +7,7 @@ using HmsAPI.Data;
 using HmsAPI.DTO.RequestDTO;
 using HmsLibrary.Data.Context;
 using HmsLibrary.Data.Model;
+using HmsLibrary.Services.EmployeeServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 
@@ -17,12 +18,14 @@ public class AuthenticationService : IAuthenticationService
     private readonly HmsDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IPatientService _patientService;
+    private readonly IEmployeeService _employeeService;
 
-    public AuthenticationService(HmsDbContext dbContext, UserManager<ApplicationUser> userManager, IPatientService patientService)
+    public AuthenticationService(HmsDbContext dbContext, UserManager<ApplicationUser> userManager, IPatientService patientService, IEmployeeService employeeService)
     {
         _dbContext = dbContext;
         _userManager = userManager;
         _patientService = patientService;
+        _employeeService = employeeService;
     }
 
     public bool SignIn(string username, string password)
