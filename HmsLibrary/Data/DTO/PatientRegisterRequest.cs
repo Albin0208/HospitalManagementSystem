@@ -4,7 +4,9 @@ namespace HmsAPI.DTO.RequestDTO
 {
     public class PatientRegisterRequest
     {
-        public RegisterRequest RegisterRequest { get; set; }
+        public required string Email { get; init; }
+        public required string Password { get; init; }
+
         public string FirstName { get; set; }
         public string LastName { get; set; }
     }
