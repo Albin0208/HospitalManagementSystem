@@ -32,15 +32,7 @@ public class MainWindowViewModel
     {
         // Do null check on password and username
 
-        var result = _authenticationService.SignIn(Username, Password);
+        //var result = _authenticationService.SignIn(Username, Password);
 
-        if (result)
-        {
-            // Navigate to the next page
-        }
-        else
-        {
-            // Show error message
-        }
     }
 }

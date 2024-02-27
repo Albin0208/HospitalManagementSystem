@@ -21,7 +21,7 @@ public class HmsDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public DbSet<Patient> Patients { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
-    public DbSet<EmployeeRole> Roles { get; set; }
+    public DbSet<EmployeeRole> EmployeeRoles { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

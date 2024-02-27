@@ -67,7 +67,7 @@ public class RoleTests
             RoleName = "Admin"
         };
 
-        _dbContext.Roles.Add(role);
+        _dbContext.EmployeeRoles.Add(role);
         _dbContext.SaveChanges();
 
         Assert.ThrowsAsync<ArgumentException>(async () => await _roleService.CreateRole(role));
@@ -78,7 +78,7 @@ public class RoleTests
     {
         var roles = CreateRoles();
 
-        await _dbContext.Roles.AddRangeAsync(roles);
+        await _dbContext.EmployeeRoles.AddRangeAsync(roles);
         await _dbContext.SaveChangesAsync();
 
         var result = await _roleService.GetRoles();
@@ -100,11 +100,11 @@ public class RoleTests
     {
         var roles = CreateRoles();
 
-        await _dbContext.Roles.AddRangeAsync(roles);
+        await _dbContext.EmployeeRoles.AddRangeAsync(roles);
         await _dbContext.SaveChangesAsync();
 
         // Get a list of all the roles
-        var createdRoles = _dbContext.Roles.ToList();
+        var createdRoles = _dbContext.EmployeeRoles.ToList();
 
         var result = await _roleService.GetRole(createdRoles[0].Id);
 
@@ -117,7 +117,7 @@ public class RoleTests
     public async Task GetRoleAsync_InvalidId()
     {
         var roles = CreateRoles();
-        await _dbContext.Roles.AddRangeAsync(roles);
+        await _dbContext.EmployeeRoles.AddRangeAsync(roles);
         await _dbContext.SaveChangesAsync();
 
         var result = await _roleService.GetRole(new Guid());
@@ -130,10 +130,10 @@ public class RoleTests
     {
         var roles = CreateRoles();
 
-        await _dbContext.Roles.AddRangeAsync(roles);
+        await _dbContext.EmployeeRoles.AddRangeAsync(roles);
         await _dbContext.SaveChangesAsync();
 
-        var createdRoles = _dbContext.Roles.ToList();
+        var createdRoles = _dbContext.EmployeeRoles.ToList();
 
         var result = await _roleService.DeleteRole(createdRoles[0].Id);
 
@@ -149,7 +149,7 @@ public class RoleTests
     {
         var roles = CreateRoles();
 
-        await _dbContext.Roles.AddRangeAsync(roles);
+        await _dbContext.EmployeeRoles.AddRangeAsync(roles);
         await _dbContext.SaveChangesAsync();
 
         Assert.ThrowsAsync<ArgumentException>(async () => await _roleService.DeleteRole(id));

@@ -71,7 +71,7 @@ public class EmployeeTest
         {
             var role = new EmployeeRole { RoleName = roleName };
 
-            var id = await _dbContext.Roles.AddAsync(role);
+            var id = await _dbContext.EmployeeRoles.AddAsync(role);
             await _dbContext.SaveChangesAsync();
 
             employee.RoleId = id.Entity.Id; // Create a new employeeRole;

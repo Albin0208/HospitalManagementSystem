@@ -20,12 +20,12 @@ public class RoleService : IRoleService
 
     public Task<List<EmployeeRole>> GetRoles()
     {
-        return _dbContext.Roles.ToListAsync();
+        return _dbContext.EmployeeRoles.ToListAsync();
     }
 
     public Task<EmployeeRole?> GetRole(Guid id)
     {
-        return _dbContext.Roles.FirstOrDefaultAsync(r => r.Id == id);
+        return _dbContext.EmployeeRoles.FirstOrDefaultAsync(r => r.Id == id);
     }
 
     public async Task<EmployeeRole> CreateRole(EmployeeRole employeeRole)
@@ -38,12 +38,12 @@ public class RoleService : IRoleService
         }
 
         // Check if role already exists
-        if (await _dbContext.Roles.AnyAsync(r => r.RoleName == employeeRole.RoleName))
+        if (await _dbContext.EmployeeRoles.AnyAsync(r => r.RoleName == employeeRole.RoleName))
         {
             throw new ArgumentException($"EmployeeRole with name {employeeRole.RoleName} already exists.", nameof(employeeRole.RoleName));
         }
 
-        await _dbContext.Roles.AddAsync(employeeRole);
+        await _dbContext.EmployeeRoles.AddAsync(employeeRole);
         await _dbContext.SaveChangesAsync();
 
         return employeeRole;
@@ -52,9 +52,9 @@ public class RoleService : IRoleService
     /// <inheritdoc />
     public async Task<EmployeeRole> DeleteRole(Guid id)
     {
-        var role = await _dbContext.Roles.FindAsync(id) ?? throw new ArgumentException($"Role with ID {id} not found.", nameof(id));
+        var role = await _dbContext.EmployeeRoles.FindAsync(id) ?? throw new ArgumentException($"Role with ID {id} not found.", nameof(id));
 
-        _dbContext.Roles.Remove(role);
+        _dbContext.EmployeeRoles.Remove(role);
         await _dbContext.SaveChangesAsync();
 
         return role;
