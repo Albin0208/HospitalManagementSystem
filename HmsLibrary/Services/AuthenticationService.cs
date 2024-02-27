@@ -1,74 +1,79 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HmsAPI.Data;
+﻿using HmsAPI.Data;
 using HmsAPI.DTO.RequestDTO;
 using HmsLibrary.Data.Context;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Services.EmployeeServices;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace HmsLibrary.Services;
+
 
 public class AuthenticationService : IAuthenticationService
 {
     private readonly HmsDbContext _dbContext;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IPatientService _patientService;
     private readonly IEmployeeService _employeeService;
 
-    public AuthenticationService(HmsDbContext dbContext, UserManager<ApplicationUser> userManager, IPatientService patientService, IEmployeeService employeeService)
+    public AuthenticationService(HmsDbContext dbContext, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IPatientService patientService, IEmployeeService employeeService)
     {
         _dbContext = dbContext;
         _userManager = userManager;
+        _signInManager = signInManager;
         _patientService = patientService;
         _employeeService = employeeService;
     }
 
-    public bool SignIn(string username, string password)
+    public async Task<string> SignIn(string username, string password)
     {
-        // Grab the user with the username
-        var user = _dbContext.Employees.FirstOrDefault(u => u.Username == username);
-        // Check if the user exists
-        if (user == null)
+        var result = await _signInManager.PasswordSignInAsync(username, password, false, false);
+
+        // TODO On success return a JWT token
+        if (result.Succeeded)
         {
-            return false;
+            var user = await _userManager.FindByNameAsync(username);
+            var token = GenerateJwtToken(user);
+            return token;
         }
 
-        // Verify the password
-        return Util.PasswordHasher.VerifyPassword(password, user.Password);
+
+
+
+        return null;
     }
 
-    public bool SignUp(Employee employee, string password)
+    private static string GenerateJwtToken(ApplicationUser user)
     {
-        // Check if the user already exists
-        if (_dbContext.Employees.Any(u => u.Username == employee.Username))
-        {
-            // Employee already exists
-            return false;
-        }
+        var SecretKey = "D/X4yFrh3i1po3MV4DEOdSIeuuii8Hji28bqMBtPwmU="; // TODO Remove this and add to appsettings.json or similar
 
-        // Encrypt password
-        password = Util.PasswordHasher.HashPassword(password);
+        // Define token parameters
+        var tokenHandler = new JsonWebTokenHandler();
+        var key = Encoding.ASCII.GetBytes(SecretKey);
 
-        employee.Password = password;
-        _dbContext.Employees.Add(employee);
-        try
+        var tokenDescriptor = new SecurityTokenDescriptor
         {
-            _dbContext.SaveChanges();
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Error saving user: {e.Message}");
-            return false;
-        }
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName)
+                // Add more claims as needed, such as user role, permissions, etc.
+            }),
+            Expires = DateTime.UtcNow.AddHours(1), // Token expiration time
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                                                        SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        return tokenHandler.CreateToken(tokenDescriptor);
     }
 
-    public async Task<IdentityResult> RegisterEmployee(RegisterRequest request)
+    public async Task<IdentityResult> RegisterEmployee(PatientRegisterRequest request)
     {
         var result = await RegisterBaseUser(request);
 
@@ -82,7 +87,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<IdentityResult> RegisterPatient(PatientRegisterRequest request)
     {
-        var result = await RegisterBaseUser(new RegisterRequest
+        var result = await RegisterBaseUser(new PatientRegisterRequest
         {
             Email = request.Email,
             Password = request.Password
@@ -120,7 +125,7 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
-    private async Task<RegisterResult> RegisterBaseUser(RegisterRequest request)
+    private async Task<RegisterResult> RegisterBaseUser(PatientRegisterRequest request)
     {
         var user = new ApplicationUser
         {

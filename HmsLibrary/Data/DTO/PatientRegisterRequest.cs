@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
-
-namespace HmsAPI.DTO.RequestDTO
+﻿namespace HmsAPI.DTO.RequestDTO
 {
     public class PatientRegisterRequest
     {

@@ -21,6 +21,19 @@ namespace HmsAPI.Controllers
             _authenticationService = authenticationService;
         }
 
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        {
+            var result = await _authenticationService.SignIn(request.Email, request.Password);
+
+            if (result != null)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest("Invalid username or password");
+        }
+
         [HttpPost("register/patient")]
         public async Task<IActionResult> RegisterPatient([FromBody] PatientRegisterRequest request)
         {
@@ -35,7 +48,7 @@ namespace HmsAPI.Controllers
         }
 
         [HttpPost("register/employee")]
-        public async Task<IActionResult> RegisterEmployee([FromBody] RegisterRequest request)
+        public async Task<IActionResult> RegisterEmployee([FromBody] PatientRegisterRequest request)
         {
             var result = await _authenticationService.RegisterEmployee(request);
 
