@@ -1,4 +1,5 @@
 ﻿using HmsAPI.DTO.RequestDTO;
+using HmsLibrary.Data.DTO;
 using HmsLibrary.Data.Model;
 using Microsoft.AspNetCore.Identity;
 
@@ -8,5 +9,5 @@ public interface IAuthenticationService
 {
     Task<IdentityResult> RegisterPatient(PatientRegisterRequest request);
     Task<IdentityResult> RegisterEmployee(PatientRegisterRequest request);
-    Task<string> SignIn(string username, string password);
+    Task<AuthResponse?> SignIn(string username, string password);
 }
