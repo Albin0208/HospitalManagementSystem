@@ -2,6 +2,7 @@
 using HmsAPI.DTO.ResponseDTO;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace HmsAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class RoleController : ControllerBase
 {
     private readonly IRoleService _roleService;
@@ -19,7 +21,8 @@ public class RoleController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType<RoleResponse>(200)]
+    //[ProducesResponseType<RoleResponse>(200)]
+    [Authorize]
     public async Task<IActionResult> GetRoles()
     {
         var roles = await _roleService.GetRoles();

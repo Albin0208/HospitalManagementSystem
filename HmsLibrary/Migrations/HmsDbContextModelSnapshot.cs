@@ -17,7 +17,7 @@ namespace HmsLibrary.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -238,33 +238,33 @@ namespace HmsLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("EmployeeRoles");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("378e811e-aa1b-46cc-9045-ba8e13076824"),
+                            Id = new Guid("adeb0de7-0b7d-4804-b1da-509888e32ba9"),
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RoleName = "Admin",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = new Guid("174a0b3d-2efd-43f5-8ca9-adc78bbbbc40"),
+                            Id = new Guid("88151fee-8564-4f9c-8bf6-a93d5d5e5dab"),
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RoleName = "Doctor",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = new Guid("c70e194c-8658-4dab-b9d0-b3940c2620f9"),
+                            Id = new Guid("0e8e197b-c018-47df-8c64-9317b5945112"),
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RoleName = "Nurse",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
-                            Id = new Guid("d7e40b53-9ee4-4a53-84c4-c1be2ba9314d"),
+                            Id = new Guid("ac76b17f-30fe-44d1-adb3-7600ea9da648"),
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RoleName = "Receptionist",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
