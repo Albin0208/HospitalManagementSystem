@@ -8,7 +8,9 @@ using HmsLibrary.Data.Context;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
 using HmsLibrary.Services.EmployeeServices;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace HMSTests;
 
@@ -29,7 +31,13 @@ public class EmployeeTest
         _dbContext = new HmsDbContext(options);
         _dbContext.Database.EnsureDeleted(); // Delete database before each test
 
-        _roleService = new RoleService(_dbContext);
+        // Create a mock for RoleStore
+        var roleStoreMock = new Mock<IRoleStore<IdentityRole<Guid>>>();
+
+        // Create an instance of RoleManager
+        var roleManager = new RoleManager<IdentityRole<Guid>>(roleStoreMock.Object, null, null, null, null);
+
+        _roleService = new RoleService(_dbContext, roleManager);
 
         _employeeService = new EmployeeService(_dbContext, _roleService);
 
@@ -58,7 +66,6 @@ public class EmployeeTest
             FirstName = firstname,
             LastName = lastname,
             Username = username,
-            Password = password,
             DateOfBirth = parsedDateOfBirth,
             PhoneNumber = phoneNumber,
             Address = address,
@@ -92,8 +99,6 @@ public class EmployeeTest
             FirstName = "John",
             LastName = "Doe",
             Username = "john.doe",
-            Password = "test",
-            DateOfBirth = DateTime.Parse("1994-12-01"),
             PhoneNumber = "123123123",
             Address = "Street 2",
             City = "Fake city",
@@ -113,7 +118,6 @@ public class EmployeeTest
             FirstName = "John",
             LastName = "Doe",
             Username = "john.doe",
-            Password = "test",
             DateOfBirth = DateTime.Parse("1994-12-01"),
             PhoneNumber = "123123123",
             Address = "Street 2",
@@ -144,7 +148,6 @@ public class EmployeeTest
             FirstName = "John",
             LastName = "Doe",
             Username = "john.doe",
-            Password = "test",
             DateOfBirth = DateTime.Parse("1994-12-01"),
             PhoneNumber = "123123123",
             Address = "Street 2",
@@ -162,7 +165,6 @@ public class EmployeeTest
             FirstName = "Jane",
             LastName = "Smith",
             Username = "jane.smith",
-            Password = "test",
             DateOfBirth = DateTime.Parse("1994-12-01"),
             PhoneNumber = "123123123",
             Address = "Street 2",
@@ -186,7 +188,6 @@ public class EmployeeTest
             FirstName = "John",
             LastName = "Doe",
             Username = "john.doe",
-            Password = "test",
             DateOfBirth = DateTime.Parse("1994-12-01"),
             PhoneNumber = "123123123",
             Address = "Street 2",
@@ -231,7 +232,6 @@ public class EmployeeTest
             FirstName = "John",
             LastName = "Doe",
             Username = "john.doe",
-            Password = "test",
             DateOfBirth = DateTime.Parse("1994-12-01"),
             PhoneNumber = "123123123",
             Address = "Street 2",

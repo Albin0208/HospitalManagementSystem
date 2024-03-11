@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HmsLibrary.Data.Model;
+using Microsoft.AspNetCore.Identity;
+using Moq;
+using HmsAPI.Data;
 
 namespace HMSTests;
 
@@ -14,6 +17,7 @@ public class RoleTests
 {
     private HmsDbContext _dbContext;
     private IRoleService _roleService;
+    private RoleManager<IdentityRole<Guid>> _roleManagerMock;
 
     [SetUp]
     public void Setup()
@@ -26,8 +30,16 @@ public class RoleTests
         _dbContext = new HmsDbContext(options);
         _dbContext.Database.EnsureDeleted();
 
+        //var userManagerMock = new Mock<UserManager<ApplicationUser>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
+
+        // Create a mock for RoleStore
+        var roleStoreMock = new Mock<IRoleStore<IdentityRole<Guid>>>();
+
+        // Create an instance of RoleManager
+        var roleManager = new RoleManager<IdentityRole<Guid>>(roleStoreMock.Object, null, null, null, null);
+
         // Setup service
-        _roleService = new RoleService(_dbContext);
+        _roleService = new RoleService(_dbContext, roleManager);
     }
 
     [TearDown]

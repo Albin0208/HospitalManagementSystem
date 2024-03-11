@@ -10,7 +10,7 @@ namespace HmsAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "admin")]
 public class RoleController : ControllerBase
 {
     private readonly IRoleService _roleService;

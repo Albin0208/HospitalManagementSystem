@@ -37,9 +37,12 @@ public class AuthenticationService : IAuthenticationService
     {
         var result = await _signInManager.PasswordSignInAsync(username, password, false, false);
 
+
         if (result.Succeeded)
         {
             var user = await _userManager.FindByNameAsync(username);
+            // Get all the roles the user is in
+            var roles = await _userManager.GetRolesAsync(user);
             var accessToken = TokenUtils.GenerateAccessToken(user!);
             var refreshToken = TokenUtils.GenerateRefreshToken();
             return new AuthResponse

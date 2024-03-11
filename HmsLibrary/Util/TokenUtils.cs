@@ -22,14 +22,25 @@ public static class TokenUtils
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(accessTokenSecret);
 
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(new[]
+        // Give me a list of all the roles the user is in
+        var roleList = new List<string> { "test", "admin" };
+
+        var claims = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName!)
-                // Add more claims as needed, such as user role, permissions, etc.
-            }),
+                new Claim(ClaimTypes.Name, user.UserName!),
+
+            });
+
+        foreach (var role in roleList)
+        {
+            claims.AddClaim(new Claim(ClaimTypes.Role, role));
+        }
+
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = claims,
             Expires = DateTime.UtcNow.AddMinutes(15), // Token expiration time
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                                                                    SecurityAlgorithms.HmacSha256Signature)

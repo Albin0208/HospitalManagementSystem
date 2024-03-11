@@ -38,18 +38,39 @@ public class HmsDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
                 modelBuilder.Entity(entity).Property<DateTime>("UpdatedAt").HasDefaultValueSql("GETDATE()").ValueGeneratedOnAddOrUpdate();
             }
 
-        // Seed default roles
-        modelBuilder.Entity<EmployeeRole>().HasData(
-            new EmployeeRole { Id = Guid.NewGuid(), RoleName = "Admin" },
-            new EmployeeRole { Id = Guid.NewGuid(), RoleName = "Doctor" },
-            new EmployeeRole { Id = Guid.NewGuid(), RoleName = "Nurse" },
-            new EmployeeRole { Id = Guid.NewGuid(), RoleName = "Receptionist" }
-        );
-
         modelBuilder.Entity<Employee>()
-            .HasOne(e => e.Role)
-            .WithMany(r => r.Employees)
-            .HasForeignKey(e => e.RoleId)
-            .IsRequired();
+    .HasOne(e => e.Role)
+    .WithMany(r => r.Employees)
+    .HasForeignKey(e => e.RoleId)
+    .IsRequired();
+
+        var roleManager = modelBuilder.Entity<IdentityRole<Guid>>();
+
+        roleManager.HasData(
+            new IdentityRole<Guid> { Id = Guid.NewGuid(), Name = "Admin", NormalizedName = "ADMIN" },
+            new IdentityRole<Guid> { Id = Guid.NewGuid(), Name = "Patient", NormalizedName = "PATIENT" },
+            new IdentityRole<Guid> { Id = Guid.NewGuid(), Name = "Employee", NormalizedName = "EMPLOYEE" },
+            new IdentityRole<Guid> { Id = Guid.NewGuid(), Name = "Doctor", NormalizedName = "DOCTOR" },
+            new IdentityRole<Guid> { Id = Guid.NewGuid(), Name = "Nurse", NormalizedName = "NURSE" },
+            new IdentityRole<Guid> { Id = Guid.NewGuid(), Name = "Receptionist", NormalizedName = "RECEPTIONIST" }
+        );
+        
+        // Create a new master user
+        var hasher = new PasswordHasher<ApplicationUser>();
+
+        var user = new ApplicationUser
+        {
+            Id = Guid.NewGuid(),
+            UserName = "admin",
+            NormalizedUserName = "ADMIN",
+            SecurityStamp = Guid.NewGuid().ToString()
+        };
+
+        user.PasswordHash = hasher.HashPassword(user, "admin");
+
+        modelBuilder.Entity<ApplicationUser>().HasData(user);
+
+
+
     }
 }

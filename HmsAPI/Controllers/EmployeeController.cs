@@ -46,7 +46,6 @@ public class EmployeeController : ControllerBase
             DateOfBirth = request.DateOfBirth ?? default,
             RoleId = role.Id,
             Role = role,
-            Password = "1234" // TODO Change how the passwords is created. Probably extract to auth service or something
         };
 
         employee = await _employeeService.CreateEmployee(employee);

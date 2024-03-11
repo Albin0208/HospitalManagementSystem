@@ -4,6 +4,7 @@ using HmsLibrary.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HmsLibrary.Migrations
 {
     [DbContext(typeof(HmsDbContext))]
-    partial class HmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240311115039_AddSuperUserAsEmployee")]
+    partial class AddSuperUserAsEmployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,15 +93,15 @@ namespace HmsLibrary.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c21d9a0a-7aa8-49d2-80b0-633a8899e0c0"),
+                            Id = new Guid("574d7911-cb2d-4aa6-afaf-9e059cdbd059"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5bd5da04-a8bd-465d-8b6f-f20f2c3c109d",
+                            ConcurrencyStamp = "537ce25b-cda1-49fa-95ee-e6e11f342c95",
+                            Email = "",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPhfi/h5ugwLDspuCK5nJyaD6SAMuTxAoplkV+tQyzuKAVedJLvWrFgsLbR4nCBTxQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOIpQFp2Mm/v2QSGqLHjSYoaywhzQ3VaKbc4UNKZga150W99O5oHZGa0QIc1jEp+PQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6a01eebf-ed7f-4ad0-8a2e-a014d12ab27e",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -342,37 +345,37 @@ namespace HmsLibrary.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a8b4be3d-d6b6-4b7d-806b-143e1a879570"),
+                            Id = new Guid("48fbf5ec-cb96-4504-84f3-1874aff2ff94"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("2a6d831f-f59c-4e30-8df3-e293f4a04df2"),
+                            Id = new Guid("23d07091-1317-4afb-bc31-2ee97ab98b44"),
                             Name = "Patient",
                             NormalizedName = "PATIENT"
                         },
                         new
                         {
-                            Id = new Guid("258ab84b-1b19-4bb7-9df3-d614df962b44"),
+                            Id = new Guid("a4d80f3e-2966-4764-975b-37c9af5d37df"),
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         },
                         new
                         {
-                            Id = new Guid("6f3293a5-0284-422a-a17d-d82b42437204"),
+                            Id = new Guid("6d118bbd-8a4f-4784-b082-21dda8d3b174"),
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
-                            Id = new Guid("6386866b-5c71-480d-8cce-7f3cb73a5ecf"),
+                            Id = new Guid("3858847f-91d3-4741-96b8-c3de72bcb2ef"),
                             Name = "Nurse",
                             NormalizedName = "NURSE"
                         },
                         new
                         {
-                            Id = new Guid("95a2802d-0c74-4e25-94fb-fec97d9abb49"),
+                            Id = new Guid("4cd6bd04-09c0-4e04-a036-9d4c5027d1c1"),
                             Name = "Receptionist",
                             NormalizedName = "RECEPTIONIST"
                         });

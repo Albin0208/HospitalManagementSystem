@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HmsAPI.Data;
 using HmsLibrary.Data.Context;
 using HmsLibrary.Data.Model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace HmsLibrary.Services;
@@ -12,10 +14,12 @@ namespace HmsLibrary.Services;
 public class RoleService : IRoleService
 {
     private readonly HmsDbContext _dbContext;
+    private readonly RoleManager<IdentityRole<Guid>> _roleManager;
 
-    public RoleService(HmsDbContext dbContext)
+    public RoleService(HmsDbContext dbContext, RoleManager<IdentityRole<Guid>> roleManager)
     {
         _dbContext = dbContext;
+        _roleManager = roleManager;
     }
 
     public Task<List<EmployeeRole>> GetRoles()
@@ -42,6 +46,14 @@ public class RoleService : IRoleService
         {
             throw new ArgumentException($"EmployeeRole with name {employeeRole.RoleName} already exists.", nameof(employeeRole.RoleName));
         }
+
+        var role = employeeRole.RoleName;
+
+        if (await _roleManager.RoleExistsAsync(role))
+        {
+            throw new ArgumentException($"EmployeeRole with name {role} already exists.", nameof(employeeRole.RoleName));
+        }
+        //_roleManager.CreateAsync(new IdentityRole(role));
 
         await _dbContext.EmployeeRoles.AddAsync(employeeRole);
         await _dbContext.SaveChangesAsync();
