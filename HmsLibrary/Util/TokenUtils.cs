@@ -58,8 +58,7 @@ public static class TokenUtils
 
     public static string GenerateRefreshToken()
     {
-        // TODO Fetch the refreshtoken secret from appsettings.json or similar
-        var refreshTokenSecret = "D/X4yFrh3i1po3MV4DEOdSIeuii8Hji28bqMBtPwmU=";
+        // TODO Generate an actual refresh token with a expiration
 
         var randomNumber = new byte[32];
         using var rng = RandomNumberGenerator.Create();
@@ -115,33 +114,5 @@ public static class TokenUtils
         }
 
         return true;
-    }
-
-    /// <summary>
-    /// Generates a JWT token for the given user
-    /// </summary>
-    /// <param name="user">The user we want a token for</param>
-    /// <param name="secretKey">The secret used for generating the token</param>
-    /// <returns>The JWT token</returns>
-    private static string GenerateJwtToken(ApplicationUser user, string secretKey)
-    {
-        // Define token parameters
-        var tokenHandler = new JsonWebTokenHandler();
-        var key = Encoding.UTF8.GetBytes(secretKey);
-
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Email),
-                new Claim(ClaimTypes.Name, user.UserName)
-                // Add more claims as needed, such as user role, permissions, etc.
-            }),
-            Expires = DateTime.UtcNow.AddHours(1), // Token expiration time
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                                                        SecurityAlgorithms.HmacSha256Signature)
-        };
-
-        return tokenHandler.CreateToken(tokenDescriptor);
     }
 }

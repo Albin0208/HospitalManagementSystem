@@ -44,12 +44,10 @@ public class AuthenticationService : IAuthenticationService
             // Get all the roles the user is in
             var roles = await _userManager.GetRolesAsync(user);
 
-            var accessToken = TokenUtils.GenerateAccessToken(user!, (List<string>)roles);
-            var refreshToken = TokenUtils.GenerateRefreshToken();
             return new AuthResponse
             {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken
+                AccessToken = TokenUtils.GenerateAccessToken(user, (List<string>)roles),
+                RefreshToken = TokenUtils.GenerateRefreshToken()
             };
         }
 
@@ -59,6 +57,7 @@ public class AuthenticationService : IAuthenticationService
     public async Task<AuthResponse?> RefreshToken(string refreshToken)
     {
         //if (!TokenUtils.ValidateRefreshToken(refreshToken)) return null;
+        
 
         var user = await _userManager.FindByNameAsync(refreshToken);
 
