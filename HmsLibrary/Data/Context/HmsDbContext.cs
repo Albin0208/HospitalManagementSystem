@@ -21,7 +21,7 @@ public class HmsDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public DbSet<Patient> Patients { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
-    public DbSet<EmployeeRole> EmployeeRoles { get; set; }
+    //public DbSet<EmployeeRole> EmployeeRoles { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,16 +38,18 @@ public class HmsDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
                 modelBuilder.Entity(entity).Property<DateTime>("UpdatedAt").HasDefaultValueSql("GETDATE()").ValueGeneratedOnAddOrUpdate();
             }
 
-        modelBuilder.Entity<Employee>()
-    .HasOne(e => e.Role)
-    .WithMany(r => r.Employees)
-    .HasForeignKey(e => e.RoleId)
-    .IsRequired();
+    //    modelBuilder.Entity<Employee>()
+    //.HasOne(e => e.Role)
+    //.WithMany(r => r.Employees)
+    //.HasForeignKey(e => e.RoleId)
+    //.IsRequired();
 
         var roleManager = modelBuilder.Entity<IdentityRole<Guid>>();
 
+        var adminRoleId = Guid.NewGuid();
+
         roleManager.HasData(
-            new IdentityRole<Guid> { Id = Guid.NewGuid(), Name = "Admin", NormalizedName = "ADMIN" },
+            new IdentityRole<Guid> { Id = adminRoleId, Name = "Admin", NormalizedName = "ADMIN" },
             new IdentityRole<Guid> { Id = Guid.NewGuid(), Name = "Patient", NormalizedName = "PATIENT" },
             new IdentityRole<Guid> { Id = Guid.NewGuid(), Name = "Employee", NormalizedName = "EMPLOYEE" },
             new IdentityRole<Guid> { Id = Guid.NewGuid(), Name = "Doctor", NormalizedName = "DOCTOR" },
@@ -67,6 +69,13 @@ public class HmsDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
         };
 
         user.PasswordHash = hasher.HashPassword(user, "admin");
+
+        // Add the admin to the admin role
+        modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(new IdentityUserRole<Guid>
+        {
+            RoleId = adminRoleId,
+            UserId = user.Id
+        });
 
         modelBuilder.Entity<ApplicationUser>().HasData(user);
 

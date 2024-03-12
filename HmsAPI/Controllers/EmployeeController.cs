@@ -44,8 +44,8 @@ public class EmployeeController : ControllerBase
             ZipCode = request.ZipCode,
             Country = request.Country,
             DateOfBirth = request.DateOfBirth ?? default,
-            RoleId = role.Id,
-            Role = role,
+            //RoleId = role.Id,
+            //Role = role,
         };
 
         employee = await _employeeService.CreateEmployee(employee);

@@ -62,8 +62,12 @@ public class AuthenticationTests
 
         // Create an instance of RoleManager
         var roleManager = new RoleManager<IdentityRole<Guid>>(roleStoreMock.Object, null, null, null, null);
+
+        var userStoreMock = new Mock<IUserStore<ApplicationUser>>();
+
+        var userManager = new UserManager<ApplicationUser>(userStoreMock.Object, null, null, null, null, null, null, null, null);
         // Setup service
-        _authenticationService = new AuthenticationService(_dbContext, _userManagerMock.Object, _signInManagerMock.Object, _patientService.Object, new EmployeeService(_dbContext, new RoleService(_dbContext, roleManager)));
+        _authenticationService = new AuthenticationService(_dbContext, _userManagerMock.Object, _signInManagerMock.Object, _patientService.Object, new EmployeeService(_dbContext, new RoleService(_dbContext, roleManager), userManager));
     }
 
     [TearDown]

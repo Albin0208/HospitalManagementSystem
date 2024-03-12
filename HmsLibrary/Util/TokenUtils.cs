@@ -1,4 +1,5 @@
 ﻿using HmsAPI.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -14,7 +15,7 @@ namespace HmsLibrary.Util;
 
 public static class TokenUtils
 {
-    public static string GenerateAccessToken(ApplicationUser user)
+    public static string GenerateAccessToken(ApplicationUser user, List<string> roles)
     {
         // TODO Fetch the accesstoken secret from appsettings.json or similar
         var accessTokenSecret = "This is my custom Secret key for authnetication which will be moved to be more secured later";
@@ -23,7 +24,6 @@ public static class TokenUtils
         var key = Encoding.UTF8.GetBytes(accessTokenSecret);
 
         // Give me a list of all the roles the user is in
-        var roleList = new List<string> { "test", "admin" };
 
         var claims = new ClaimsIdentity(new[]
             {
@@ -32,7 +32,7 @@ public static class TokenUtils
 
             });
 
-        foreach (var role in roleList)
+        foreach (var role in roles)
         {
             claims.AddClaim(new Claim(ClaimTypes.Role, role));
         }

@@ -23,7 +23,7 @@ public class EmployeeResponse
         {
             Id = employee.Id,
             Username = employee.Username,
-            Role = employee.Role?.RoleName,
+            //Role = employee.Role?.RoleName,
             FirstName = employee.FirstName,
             LastName = employee.LastName,
             Email = employee.Email,

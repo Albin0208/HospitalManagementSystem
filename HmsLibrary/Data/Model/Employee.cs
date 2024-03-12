@@ -11,9 +11,6 @@ public class Employee : BaseEntity
 {
     [Required, MaxLength(30)]
     public string Username { get; set; }
-    //[Required]
-    public Guid RoleId { get; set; }
-    public EmployeeRole Role { get; set; } = null!;
     [Required, MaxLength(30)]
     public string FirstName { get; set; }
     [Required, MaxLength(30)]

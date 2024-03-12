@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HmsAPI.Data;
 using HmsLibrary.Data.Context;
+using HmsLibrary.Data.DTO;
 using HmsLibrary.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,53 +23,56 @@ public class RoleService : IRoleService
         _roleManager = roleManager;
     }
 
-    public Task<List<EmployeeRole>> GetRoles()
+    public async Task<List<IdentityRole<Guid>>> GetRoles()
     {
-        return _dbContext.EmployeeRoles.ToListAsync();
+        // Retrieve roles asynchronously
+        var rolesList = await _roleManager.Roles.ToListAsync();
+
+        return rolesList;
     }
 
-    public Task<EmployeeRole?> GetRole(Guid id)
+    public async Task<IdentityRole<Guid>?> GetRole(Guid id)
     {
-        return _dbContext.EmployeeRoles.FirstOrDefaultAsync(r => r.Id == id);
+        var role = await _roleManager.FindByIdAsync(id.ToString());
+
+        return role;
     }
 
-    public async Task<EmployeeRole> CreateRole(EmployeeRole employeeRole)
+    public async Task<IdentityRole<Guid>> CreateRole(string name)
     {
-        ArgumentNullException.ThrowIfNull(employeeRole);
+        ArgumentNullException.ThrowIfNull(name);
 
-        if (string.IsNullOrWhiteSpace(employeeRole.RoleName))
+        if (string.IsNullOrWhiteSpace(name))
         {
-            throw new ArgumentException("EmployeeRole name cannot be empty or null.", nameof(employeeRole.RoleName));
+            throw new ArgumentException("Role name cannot be empty or null.", nameof(name));
         }
 
-        // Check if role already exists
-        if (await _dbContext.EmployeeRoles.AnyAsync(r => r.RoleName == employeeRole.RoleName))
+        if (await _roleManager.RoleExistsAsync(name))
         {
-            throw new ArgumentException($"EmployeeRole with name {employeeRole.RoleName} already exists.", nameof(employeeRole.RoleName));
+            throw new ArgumentException($"EmployeeRole with name {name} already exists.", nameof(name));
         }
 
-        var role = employeeRole.RoleName;
+        var role = new IdentityRole<Guid>(name);
 
-        if (await _roleManager.RoleExistsAsync(role))
-        {
-            throw new ArgumentException($"EmployeeRole with name {role} already exists.", nameof(employeeRole.RoleName));
-        }
-        //_roleManager.CreateAsync(new IdentityRole(role));
+        await _roleManager.CreateAsync(role);
 
-        await _dbContext.EmployeeRoles.AddAsync(employeeRole);
-        await _dbContext.SaveChangesAsync();
-
-        return employeeRole;
+        return role;
     }
 
     /// <inheritdoc />
-    public async Task<EmployeeRole> DeleteRole(Guid id)
+    public async Task<IdentityRole<Guid>> DeleteRole(Guid id)
     {
-        var role = await _dbContext.EmployeeRoles.FindAsync(id) ?? throw new ArgumentException($"Role with ID {id} not found.", nameof(id));
+        var role = await _roleManager.FindByIdAsync(id.ToString()) ?? throw new ArgumentException($"Role with ID {id} not found.", nameof(id));
 
-        _dbContext.EmployeeRoles.Remove(role);
+        await _roleManager.DeleteAsync(role);
         await _dbContext.SaveChangesAsync();
 
         return role;
+    }
+
+    public Task<List<IdentityRole<Guid>>> GetRoles(List<Guid> roleIds)
+    {
+        // Fetch all roles from the database based on the roleIds
+        return _roleManager.Roles.Where(r => roleIds.Contains(r.Id)).ToListAsync();
     }
 }

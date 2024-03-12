@@ -10,7 +10,7 @@ namespace HmsAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "admin")]
+[Authorize(Roles = "Admin")]
 public class RoleController : ControllerBase
 {
     private readonly IRoleService _roleService;
@@ -57,14 +57,9 @@ public class RoleController : ControllerBase
             return BadRequest("EmployeeRole name cannot be empty or null.");
         }
 
-        var employeeRole = new EmployeeRole
-        {
-            RoleName = request.RoleName
-        };
+        var role = await _roleService.CreateRole(request.RoleName);
 
-        employeeRole = await _roleService.CreateRole(employeeRole);
-
-        var response = RoleResponse.FromRole(employeeRole);
+        var response = RoleResponse.FromRole(role);
 
         return Ok(response);
     }
