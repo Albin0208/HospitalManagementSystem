@@ -35,12 +35,7 @@ public class EmployeeService : IEmployeeService
 
         foreach (var user in users)
         {            
-            var employeeDTO = new EmployeeDTO
-            {
-                Employee = await _dbContext.Employees.FindAsync(user.Id),
-                Roles = (List<string>)await _userManager.GetRolesAsync(user)
-            };
-            employeeDTOs.Add(employeeDTO);
+            employeeDTOs.Add(await GetEmployeeDTO(user));
         }
 
         // Add all the roles to the users
@@ -48,6 +43,15 @@ public class EmployeeService : IEmployeeService
 
         // Fetch all employees from the database including their roles with the userManager
         return employeeDTOs;
+    }
+
+    private async Task<EmployeeDTO> GetEmployeeDTO(ApplicationUser user)
+    {
+        return new EmployeeDTO
+        {
+            Employee = await _dbContext.Employees.FindAsync(user.Id),
+            Roles = (List<string>)await _userManager.GetRolesAsync(user)
+        };
     }
 
     public async Task<EmployeeDTO?> GetEmployee(Guid id)
@@ -59,22 +63,7 @@ public class EmployeeService : IEmployeeService
             return null;
         }
 
-        var employee = await _dbContext.Employees.FindAsync(id);
-
-        if (employee == null)
-        {
-            return null;
-        }
-
-        var roles = await _userManager.GetRolesAsync(user);
-
-        return new EmployeeDTO
-        {
-            Employee = employee,
-            Roles = (List<string>)roles
-        };
-
-        //return _dbContext.Employees.Include(e => e.Role).FirstOrDefaultAsync(e => e.Id == id);
+        return await GetEmployeeDTO(user);
     }
 
     public async Task<IdentityResult> CreateEmployee(CreateEmployeeRequest request)
