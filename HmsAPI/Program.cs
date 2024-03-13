@@ -2,6 +2,7 @@ using HmsAPI.Data;
 using HmsLibrary.Data.Context;
 using HmsLibrary.Services;
 using HmsLibrary.Services.EmployeeServices;
+using HmsLibrary.Util;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -90,6 +91,16 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+// Configure the options
+var options = new Options();
+config.GetSection("JwtSettings").Bind(options);
+TokenUtils.jwtSettings = new Options.JwtSettings
+{
+    Key = config["JwtSettings:Key"],
+    Issuer = config["JwtSettings:Issuer"],
+    Audience = config["JwtSettings:Audience"]
+}; // Set the JWT settings
 
 var app = builder.Build();
 

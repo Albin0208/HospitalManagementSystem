@@ -10,15 +10,18 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static HmsLibrary.Util.Options;
 
 namespace HmsLibrary.Util;
 
 public static class TokenUtils
 {
+    public static JwtSettings jwtSettings { get; set; }
+
     public static string GenerateAccessToken(ApplicationUser user, List<string> roles)
     {
         // TODO Fetch the accesstoken secret from appsettings.json or similar
-        var accessTokenSecret = "This is my custom Secret key for authnetication which will be moved to be more secured later";
+        var accessTokenSecret = jwtSettings.Key;
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(accessTokenSecret);
