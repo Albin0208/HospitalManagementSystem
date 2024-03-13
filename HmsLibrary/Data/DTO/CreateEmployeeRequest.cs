@@ -10,5 +10,6 @@ namespace HmsLibrary.Data.DTO;
 public class CreateEmployeeRequest
 {
     public required Employee Employee { get; set; }
+    public required string Password { get; set; }
     public List<Guid>? RoleIds { get; set; }
 }

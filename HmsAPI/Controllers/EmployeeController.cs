@@ -1,6 +1,7 @@
 ﻿using HmsAPI.DTO;
 using HmsAPI.DTO.RequestDTO;
 using HmsAPI.DTO.ResponseDTO;
+using HmsLibrary.Data.DTO;
 using HmsLibrary.Data.Model;
 using HmsLibrary.Services;
 using HmsLibrary.Services.EmployeeServices;
@@ -25,12 +26,12 @@ public class EmployeeController : ControllerBase
     public async Task<IActionResult> CreateEmployee([FromBody] EmployeeRequest request)
     {
         // Lookup the employeeRole and check if it exists
-        var role = await _roleService.GetRole((Guid)request.RoleId);
+        //var role = await _roleService.GetRole((Guid)request.RoleId);
 
-        if (role == null)
-        {
-            return BadRequest("EmployeeRole does not exist");
-        }
+        //if (role == null)
+        //{
+        //    return BadRequest("EmployeeRole does not exist");
+        //}
         
         var employee = new Employee
         {
@@ -48,11 +49,17 @@ public class EmployeeController : ControllerBase
             //Role = role,
         };
 
-        employee = await _employeeService.CreateEmployee(employee);
+        var employeeRequest = new CreateEmployeeRequest
+        {
+            Employee = employee,
+            Password = request.Password
+        };
+
+        var res = await _employeeService.CreateEmployee(employeeRequest);
 
         var response = EmployeeResponse.FromEmployee(employee);
 
-        return Ok(response);
+        return Created("Employee", res);
     }
 
     [HttpGet]

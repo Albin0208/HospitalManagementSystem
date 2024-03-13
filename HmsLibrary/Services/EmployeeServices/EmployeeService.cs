@@ -9,6 +9,7 @@ using HmsLibrary.Data.DTO;
 using HmsLibrary.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HmsLibrary.Services.EmployeeServices;
 
@@ -37,52 +38,63 @@ public class EmployeeService : IEmployeeService
         //return _dbContext.Employees.Include(e => e.Role).FirstOrDefaultAsync(e => e.Id == id);
     }
 
-    public async Task<Employee> CreateEmployee(CreateEmployeeRequest request)
+    public async Task<IdentityResult> CreateEmployee(CreateEmployeeRequest request)
     {
-        return new Employee()
+        ArgumentNullException.ThrowIfNull(request.Employee);
+
+        var employee = request.Employee;
+
+        if (string.IsNullOrWhiteSpace(employee.FirstName))
         {
-            Id = Guid.NewGuid(),
-            FirstName = "John",
-            LastName = "Doe",
-            Email = ""
+            throw new ArgumentException("Firstname cannot be empty or null.", nameof(employee.FirstName));
+        }
+
+        if (string.IsNullOrWhiteSpace(employee.LastName))
+        {
+            throw new ArgumentException("Lastname cannot be empty or null.", nameof(employee.LastName));
+        }
+
+        // Setup a new user with login and password
+        var user = new ApplicationUser
+        {
+            UserName = employee.Email,
+            Email = employee.Email
         };
-        //throw new NotImplementedException("Check if to be implemented");
-        //ArgumentNullException.ThrowIfNull(request);
 
-        //var employee = request.Employee;
-
-        //if (string.IsNullOrWhiteSpace(employee.FirstName))
-        //{
-        //    throw new ArgumentException("Firstname cannot be empty or null.", nameof(employee.FirstName));
-        //}
-
-        //if (string.IsNullOrWhiteSpace(employee.LastName))
-        //{
-        //    throw new ArgumentException("Lastname cannot be empty or null.", nameof(employee.LastName));
-        //}
-
-        //// retrive all roles from the ids pased in the employee object
-        //var roleIds = request.RoleIds;
-
-        //if (roleIds != null)
-        //{
-        //    // Fetch all roles from the database based on the roleIds
-        //    var roles = await _roleService.GetRoles(roleIds);
-        //    foreach ( var role in roles)
-        //    {
-        //        _userManager.AddToRoleAsync(employee, role.Name);
-        //    }
-        //}
+        var result = await _userManager.CreateAsync(user, request.Password);
 
 
-        ////// Retrieve the employeeRole from the database based on RoleId
-        ////var role = await _roleService.GetRole(employee.RoleId) ?? throw new ArgumentException($"Role with ID {employee.RoleId} not found.", nameof(employee.RoleId));
-        ////employee.Role = role;
+        if (!result.Succeeded)
+        {
+            return result;
+        }
 
-        //await _dbContext.Employees.AddAsync(employee);
-        //await _dbContext.SaveChangesAsync();
+        employee.Id = user.Id;
+        employee.Username = user.UserName;
 
-        //return employee;
+        try
+        {
+            // Add the user to the employee role
+            // TODO Fix so the role is not hardcoded
+            // TODO Also go thorugh the list of roles and add all the roles to the user
+            await _userManager.AddToRoleAsync(user, "Employee");
+            await _dbContext.Employees.AddAsync(employee);
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            // Remove the user if the employee creation fails
+            await _userManager.DeleteAsync(user);
+
+            // Create a failed IdentityResult instance with the error details
+            var error = new IdentityError { Code = "UsernameErros", Description = "Error creating employee: " + e.Message };
+            var errorList = new List<IdentityError> { error };
+            var identityResult = IdentityResult.Failed([.. errorList]);
+
+            return identityResult;
+        }
+
+        return result;
     }
 
     public async Task<Employee> UpdateEmployee(Employee employee)
@@ -123,10 +135,5 @@ public class EmployeeService : IEmployeeService
         await _dbContext.SaveChangesAsync();
 
         return employee;
-    }
-
-    public Task<Employee> CreateEmployee(Employee employee)
-    {
-        throw new NotImplementedException();
     }
 }

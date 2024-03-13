@@ -75,25 +75,42 @@ public class AuthenticationService : IAuthenticationService
         };
     }
 
-
-
-
-
-
-
-
+    // TODO Make this a generic request so both employees and patients can use it then the patient can have specific
     public async Task<IdentityResult> RegisterEmployee(PatientRegisterRequest request)
     {
-        var result = await RegisterBaseUser(request);
-
-        if (result.Result.Succeeded)
+        var employee = new Employee
         {
-            // TODO Add employee specific data to the employee table
-        }
+            //Id = user.Id,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            // TODO Handle the rest of the properties
+            //DateOfBirth = request.DateOfBirth,
+            //PhoneNumber = request.PhoneNumber,
+            //Address = request.Address,
+            //City = request.City,
+            //ZipCode = request.ZipCode,
+            //Country = request.Country,
+        };
 
-        return result.Result;
+        var newEmployeeRequest = new CreateEmployeeRequest
+        {
+            Employee = employee,
+            Password = request.Password
+        };
+
+        try
+        {
+           return await _employeeService.CreateEmployee(newEmployeeRequest);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error creating employee: {e.Message}");
+            return IdentityResult.Failed();
+        }
     }
 
+    // TODO Rewrite this to be written in the same way as register employee
     public async Task<IdentityResult> RegisterPatient(PatientRegisterRequest request)
     {
         var result = await RegisterBaseUser(new PatientRegisterRequest
