@@ -52,7 +52,8 @@ public class EmployeeController : ControllerBase
         var employeeRequest = new CreateEmployeeRequest
         {
             Employee = employee,
-            Password = request.Password
+            Password = request.Password,
+            RoleIds = request.RoleIds
         };
 
         var res = await _employeeService.CreateEmployee(employeeRequest);
@@ -66,8 +67,7 @@ public class EmployeeController : ControllerBase
     public async Task<IActionResult> GetEmployees()
     {
         var employees = await _employeeService.GetEmployees();
-
-        var response = employees.Select(EmployeeResponse.FromEmployee);
+        var response = employees.Select(res => EmployeeResponse.FromEmployee(res.Employee, res.Roles));
 
         return Ok(response);
     }
@@ -75,14 +75,14 @@ public class EmployeeController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEmployee(Guid id)
     {
-        var employee = await _employeeService.GetEmployee(id);
+        var res = await _employeeService.GetEmployee(id);
 
-        if (employee == null)
+        if (res.Employee == null)
         {
             return NotFound();
         }
 
-        var response = EmployeeResponse.FromEmployee(employee);
+        var response = EmployeeResponse.FromEmployee(res.Employee, res.Roles);
 
         return Ok(response);
     }
@@ -135,9 +135,11 @@ public class EmployeeController : ControllerBase
         }
 
 
-        employee = await _employeeService.UpdateEmployee(employee);
+        var e = employee.Employee;
 
-        var response = EmployeeResponse.FromEmployee(employee);
+        e = await _employeeService.UpdateEmployee(e);
+
+        var response = EmployeeResponse.FromEmployee(e);
 
         return Ok(response);
     }

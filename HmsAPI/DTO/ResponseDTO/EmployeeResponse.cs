@@ -6,7 +6,7 @@ public class EmployeeResponse
 {
     public Guid Id { get; set; }
     public string Username { get; set; } = "";
-    public string Role { get; set; } = "";
+    public List<string> Roles { get; set; } = [];
     public string FirstName { get; set; } = "";
     public string LastName { get; set; } = "";
     public string? Email { get; set; }
@@ -19,6 +19,11 @@ public class EmployeeResponse
 
     public static EmployeeResponse FromEmployee(Employee employee)
     {
+        if (employee == null)
+        {
+            return new EmployeeResponse();
+        }
+
         return new EmployeeResponse
         {
             Id = employee.Id,
@@ -34,5 +39,19 @@ public class EmployeeResponse
             ZipCode = employee.ZipCode,
             Country = employee.Country,
         };
+    }
+
+    public static EmployeeResponse FromEmployee(Employee employee, List<string>? Roles)
+    {
+        if (employee == null)
+        {
+            return new EmployeeResponse();
+        }
+
+        var emp = FromEmployee(employee);
+
+        emp.Roles = Roles ?? new List<string>();
+
+        return emp;
     }
 }

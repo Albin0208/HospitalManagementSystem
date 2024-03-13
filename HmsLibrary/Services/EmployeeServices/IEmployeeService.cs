@@ -6,8 +6,8 @@ namespace HmsLibrary.Services.EmployeeServices;
 
 public interface IEmployeeService
 {
-    Task<List<Employee>> GetEmployees();
-    Task<Employee?> GetEmployee(Guid id);
+    Task<List<EmployeeDTO>> GetEmployees();
+    Task<EmployeeDTO?> GetEmployee(Guid id);
     Task<IdentityResult> CreateEmployee(CreateEmployeeRequest employee);
     Task<Employee> UpdateEmployee(Employee employee);
     Task<Employee> DeleteEmployee(Guid id);

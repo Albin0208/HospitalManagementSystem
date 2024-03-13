@@ -23,21 +23,13 @@ public class RoleService : IRoleService
         _roleManager = roleManager;
     }
 
-    public async Task<List<IdentityRole<Guid>>> GetRoles()
-    {
-        // Retrieve roles asynchronously
-        var rolesList = await _roleManager.Roles.ToListAsync();
+    /// <inheritdoc />
+    public async Task<List<IdentityRole<Guid>>> GetRoles() => await _roleManager.Roles.ToListAsync();
 
-        return rolesList;
-    }
+    /// <inheritdoc />
+    public async Task<IdentityRole<Guid>?> GetRole(Guid id) => await _roleManager.FindByIdAsync(id.ToString());
 
-    public async Task<IdentityRole<Guid>?> GetRole(Guid id)
-    {
-        var role = await _roleManager.FindByIdAsync(id.ToString());
-
-        return role;
-    }
-
+    /// <inheritdoc />
     public async Task<IdentityRole<Guid>> CreateRole(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
@@ -65,14 +57,10 @@ public class RoleService : IRoleService
         var role = await _roleManager.FindByIdAsync(id.ToString()) ?? throw new ArgumentException($"Role with ID {id} not found.", nameof(id));
 
         await _roleManager.DeleteAsync(role);
-        await _dbContext.SaveChangesAsync();
 
         return role;
     }
 
-    public Task<List<IdentityRole<Guid>>> GetRoles(List<Guid> roleIds)
-    {
-        // Fetch all roles from the database based on the roleIds
-        return _roleManager.Roles.Where(r => roleIds.Contains(r.Id)).ToListAsync();
-    }
+    /// <inheritdoc />
+    public Task<List<IdentityRole<Guid>>> GetRoles(List<Guid> roleIds) => _roleManager.Roles.Where(r => roleIds.Contains(r.Id)).ToListAsync();
 }

@@ -26,15 +26,54 @@ public class EmployeeService : IEmployeeService
         _userManager = userManager;
     }
 
-    public Task<List<Employee>> GetEmployees()
+    public async Task<List<EmployeeDTO>> GetEmployees()
     {
+        // Fetch all user and roles from the usermanager then concat them with the employees from the dbContext
+        var users = await _userManager.Users.ToListAsync();
+
+        var employeeDTOs = new List<EmployeeDTO>();
+
+        foreach (var user in users)
+        {            
+            var employeeDTO = new EmployeeDTO
+            {
+                Employee = await _dbContext.Employees.FindAsync(user.Id),
+                Roles = (List<string>)await _userManager.GetRolesAsync(user)
+            };
+            employeeDTOs.Add(employeeDTO);
+        }
+
+        // Add all the roles to the users
+
+
         // Fetch all employees from the database including their roles with the userManager
-        return null;
+        return employeeDTOs;
     }
 
-    public Task<Employee?> GetEmployee(Guid id)
+    public async Task<EmployeeDTO?> GetEmployee(Guid id)
     {
-        throw new NotImplementedException("Check if to be implemented");
+        var user = await _userManager.FindByIdAsync(id.ToString());
+
+        if (user == null)
+        {
+            return null;
+        }
+
+        var employee = await _dbContext.Employees.FindAsync(id);
+
+        if (employee == null)
+        {
+            return null;
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return new EmployeeDTO
+        {
+            Employee = employee,
+            Roles = (List<string>)roles
+        };
+
         //return _dbContext.Employees.Include(e => e.Role).FirstOrDefaultAsync(e => e.Id == id);
     }
 
@@ -72,17 +111,34 @@ public class EmployeeService : IEmployeeService
         employee.Id = user.Id;
         employee.Username = user.UserName;
 
+        var addedRoles = new List<string>();
         try
         {
             // Add the user to the employee role
             // TODO Fix so the role is not hardcoded
             // TODO Also go thorugh the list of roles and add all the roles to the user
-            await _userManager.AddToRoleAsync(user, "Employee");
+            if (request.RoleIds != null)
+            {
+
+                foreach (var roleId in request.RoleIds)
+                {
+                    var role = await _roleService.GetRole(roleId) ?? throw new ArgumentException($"Role with ID {roleId} not found.", nameof(roleId));
+                    addedRoles.Add(role.Name);
+                    await _userManager.AddToRoleAsync(user, role.Name);
+                }
+            }
+
             await _dbContext.Employees.AddAsync(employee);
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception e)
         {
+            // Remove the connections between the user and the roles
+            foreach(var roleName in addedRoles)
+            {
+                await _userManager.RemoveFromRoleAsync(user, roleName);
+            }
+
             // Remove the user if the employee creation fails
             await _userManager.DeleteAsync(user);
 
