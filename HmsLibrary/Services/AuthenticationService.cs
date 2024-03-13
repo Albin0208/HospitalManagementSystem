@@ -75,7 +75,7 @@ public class AuthenticationService : IAuthenticationService
         };
     }
 
-    // TODO Make this a generic request so both employees and patients can use it then the patient can have specific
+    // TODO This should probably be deleted since you cannot register as an employee, and admin should be the only one to create employees
     public async Task<IdentityResult> RegisterEmployee(PatientRegisterRequest request)
     {
         var employee = new Employee
