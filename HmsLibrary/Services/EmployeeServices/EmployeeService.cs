@@ -144,33 +144,25 @@ public class EmployeeService : IEmployeeService
 
     public async Task<Employee> UpdateEmployee(Employee employee)
     {
-        throw new NotImplementedException("Check if to be implemented");
-        //var existingEmployee = await _dbContext.Employees.FindAsync(employee.Id) ?? throw new ArgumentException($"Employee with ID {employee.Id} not found.", nameof(employee.Id));
+        var existingEmployee = await _dbContext.Employees.FindAsync(employee.Id) ?? throw new ArgumentException($"Employee with ID {employee.Id} not found.", nameof(employee.Id));
 
-        //var properties = typeof(Employee).GetProperties();
+        var properties = typeof(Employee).GetProperties();
 
-        //foreach (var property in properties)
-        //{
-        //    var newValue = property.GetValue(employee);
+        foreach (var property in properties)
+        {
+            var newValue = property.GetValue(employee);
 
-        //    // If role is to update check if it exists
-        //    if (property.Name == "RoleId" && newValue != null && (Guid)newValue != Guid.Empty)
-        //    {
-        //        var role = await _roleService.GetRole((Guid)newValue) ?? throw new ArgumentException($"Role with ID {newValue} not found.", nameof(newValue));
-        //        existingEmployee.Role = role;
-        //        continue;
-        //    }
+            // TODO Don't allow update of some fields
 
-        //    if (newValue != null)
-        //    {
-        //        property.SetValue(existingEmployee, newValue);
-        //    }
-        //}
+            if (newValue != null)
+            {
+                property.SetValue(existingEmployee, newValue);
+            }
+        }
 
+        await _dbContext.SaveChangesAsync();
 
-        //await _dbContext.SaveChangesAsync();
-
-        //return existingEmployee;
+        return existingEmployee;
     }
 
     public async Task<Employee> DeleteEmployee(Guid id)

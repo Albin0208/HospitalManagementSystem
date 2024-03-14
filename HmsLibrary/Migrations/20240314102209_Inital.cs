@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HmsLibrary.Migrations
 {
     /// <inheritdoc />
-    public partial class InitalMigration : Migration
+    public partial class Inital : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -53,17 +53,27 @@ namespace HmsLibrary.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EmployeeRoles",
+                name: "Employees",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoleName = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    ZipCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Discriminator = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", rowVersion: true, nullable: false, defaultValueSql: "GETDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", rowVersion: true, nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmployeeRoles", x => x.Id);
+                    table.PrimaryKey("PK_Employees", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -195,38 +205,6 @@ namespace HmsLibrary.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Employees",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    City = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    ZipCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Discriminator = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", rowVersion: true, nullable: false, defaultValueSql: "GETDATE()"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", rowVersion: true, nullable: false, defaultValueSql: "GETDATE()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employees", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Employees_EmployeeRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "EmployeeRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Appointments",
                 columns: table => new
                 {
@@ -257,15 +235,32 @@ namespace HmsLibrary.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "EmployeeRoles",
-                columns: new[] { "Id", "RoleName" },
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("0e8e197b-c018-47df-8c64-9317b5945112"), "Nurse" },
-                    { new Guid("88151fee-8564-4f9c-8bf6-a93d5d5e5dab"), "Doctor" },
-                    { new Guid("ac76b17f-30fe-44d1-adb3-7600ea9da648"), "Receptionist" },
-                    { new Guid("adeb0de7-0b7d-4804-b1da-509888e32ba9"), "Admin" }
+                    { new Guid("58d93ce2-5404-4e4f-9447-0ad5f881708f"), null, "Patient", "PATIENT" },
+                    { new Guid("9d3c8b60-99d1-4589-b6c0-51b8e13a8b91"), null, "Receptionist", "RECEPTIONIST" },
+                    { new Guid("a38338ec-c024-4ccc-95e6-ba8bd9f99fcf"), null, "Employee", "EMPLOYEE" },
+                    { new Guid("b1b46ec6-bd7a-4b26-bea0-31e55713d658"), null, "Nurse", "NURSE" },
+                    { new Guid("db0f9652-26e2-4ee0-9410-87e44f84731e"), null, "Doctor", "DOCTOR" },
+                    { new Guid("f1167daa-fd7c-40a7-b35e-582bacfcb2fa"), null, "Admin", "ADMIN" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { new Guid("42586dcb-ce2d-4ddf-8529-fa02860e21fe"), 0, "59ca7631-faa3-4fac-b92c-8a1c648c8db7", null, false, false, null, null, "ADMIN", "AQAAAAIAAYagAAAAEOR4XoR4Vvcp6B7HdDeU5GqXTyUKUfOTR2cvjTEAMBGOtwHzxytQcGUhPISi2GlVxA==", null, false, "44ce707e-f1c5-418d-bc50-db49461717bc", false, "admin" });
+
+            migrationBuilder.InsertData(
+                table: "Employees",
+                columns: new[] { "Id", "Address", "City", "Country", "DateOfBirth", "Discriminator", "Email", "FirstName", "LastName", "PhoneNumber", "Username", "ZipCode" },
+                values: new object[] { new Guid("42586dcb-ce2d-4ddf-8529-fa02860e21fe"), null, null, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Employee", null, "Admin", "Admin", null, "admin", null });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { new Guid("f1167daa-fd7c-40a7-b35e-582bacfcb2fa"), new Guid("42586dcb-ce2d-4ddf-8529-fa02860e21fe") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_DoctorId",
@@ -315,11 +310,6 @@ namespace HmsLibrary.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_RoleId",
-                table: "Employees",
-                column: "RoleId");
         }
 
         /// <inheritdoc />
@@ -354,9 +344,6 @@ namespace HmsLibrary.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "EmployeeRoles");
         }
     }
 }

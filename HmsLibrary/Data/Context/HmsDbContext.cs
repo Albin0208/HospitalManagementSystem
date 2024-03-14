@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using HmsAPI.Data;
 using HmsLibrary.Data.Model;
-using HmsLibrary.Data.Model.Employees;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +20,6 @@ public class HmsDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public DbSet<Patient> Patients { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
-    //public DbSet<EmployeeRole> EmployeeRoles { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -79,7 +77,15 @@ public class HmsDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
 
         modelBuilder.Entity<ApplicationUser>().HasData(user);
 
+        var employee = new Employee
+        {
+            Id = user.Id,
+            FirstName = "Admin",
+            LastName = "Admin",
+            Username = "admin",
+        };
 
+        modelBuilder.Entity<Employee>().HasData(employee);
 
     }
 }

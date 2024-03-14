@@ -90,15 +90,15 @@ namespace HmsLibrary.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5de995d2-9b9b-4b43-87bc-6cc4377aa8bc"),
+                            Id = new Guid("42586dcb-ce2d-4ddf-8529-fa02860e21fe"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8d751d41-1fe9-4894-a9cc-3ee81b2758c0",
+                            ConcurrencyStamp = "59ca7631-faa3-4fac-b92c-8a1c648c8db7",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAELxOVUclFO/fpCg5VLPsDxLMlQi4FaJt5Ne6FYlrVaXWISQ8tO86pe7L06dJwenlQA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOR4XoR4Vvcp6B7HdDeU5GqXTyUKUfOTR2cvjTEAMBGOtwHzxytQcGUhPISi2GlVxA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d54140eb-9b6b-4884-9339-226200e6f50e",
+                            SecurityStamp = "44ce707e-f1c5-418d-bc50-db49461717bc",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -183,9 +183,6 @@ namespace HmsLibrary.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid?>("EmployeeRoleId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -216,41 +213,23 @@ namespace HmsLibrary.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeRoleId");
-
                     b.ToTable("Employees");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("Employee");
 
                     b.UseTphMappingStrategy();
-                });
 
-            modelBuilder.Entity("HmsLibrary.Data.Model.EmployeeRole", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EmployeeRole");
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("42586dcb-ce2d-4ddf-8529-fa02860e21fe"),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "Admin",
+                            LastName = "Admin",
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "admin"
+                        });
                 });
 
             modelBuilder.Entity("HmsLibrary.Data.Model.Patient", b =>
@@ -342,37 +321,37 @@ namespace HmsLibrary.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("e89c2fed-d493-4557-8d6d-cfb82b17271b"),
+                            Id = new Guid("f1167daa-fd7c-40a7-b35e-582bacfcb2fa"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("58ea414a-33fa-4aba-bed1-640f2e59dc6f"),
+                            Id = new Guid("58d93ce2-5404-4e4f-9447-0ad5f881708f"),
                             Name = "Patient",
                             NormalizedName = "PATIENT"
                         },
                         new
                         {
-                            Id = new Guid("015a1e1c-6f86-4d77-8286-3854f885c8d5"),
+                            Id = new Guid("a38338ec-c024-4ccc-95e6-ba8bd9f99fcf"),
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         },
                         new
                         {
-                            Id = new Guid("2ba90d6e-9067-49e1-a9bd-912c4f83bba4"),
+                            Id = new Guid("db0f9652-26e2-4ee0-9410-87e44f84731e"),
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
-                            Id = new Guid("af596257-c11d-4490-95cf-bcc70fad29ac"),
+                            Id = new Guid("b1b46ec6-bd7a-4b26-bea0-31e55713d658"),
                             Name = "Nurse",
                             NormalizedName = "NURSE"
                         },
                         new
                         {
-                            Id = new Guid("30104036-9e60-4f1b-8a12-8a1d80bbb472"),
+                            Id = new Guid("9d3c8b60-99d1-4589-b6c0-51b8e13a8b91"),
                             Name = "Receptionist",
                             NormalizedName = "RECEPTIONIST"
                         });
@@ -464,8 +443,8 @@ namespace HmsLibrary.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("5de995d2-9b9b-4b43-87bc-6cc4377aa8bc"),
-                            RoleId = new Guid("e89c2fed-d493-4557-8d6d-cfb82b17271b")
+                            UserId = new Guid("42586dcb-ce2d-4ddf-8529-fa02860e21fe"),
+                            RoleId = new Guid("f1167daa-fd7c-40a7-b35e-582bacfcb2fa")
                         });
                 });
 
@@ -512,13 +491,6 @@ namespace HmsLibrary.Migrations
                     b.Navigation("Doctor");
 
                     b.Navigation("Patient");
-                });
-
-            modelBuilder.Entity("HmsLibrary.Data.Model.Employee", b =>
-                {
-                    b.HasOne("HmsLibrary.Data.Model.EmployeeRole", null)
-                        .WithMany("Employees")
-                        .HasForeignKey("EmployeeRoleId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -570,11 +542,6 @@ namespace HmsLibrary.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("HmsLibrary.Data.Model.EmployeeRole", b =>
-                {
-                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }
