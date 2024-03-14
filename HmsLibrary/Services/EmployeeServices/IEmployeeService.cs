@@ -11,4 +11,6 @@ public interface IEmployeeService
     Task<IdentityResult> CreateEmployee(CreateEmployeeRequest employee);
     Task<Employee> UpdateEmployee(Employee employee);
     Task<Employee> DeleteEmployee(Guid id);
+    Task<bool> AddUserToRoles(Guid userId, List<Guid> roleIds);
+    Task<bool> RemoveUserFromRole(Guid userId, List<Guid> roleIds);
 }

@@ -173,4 +173,30 @@ public class EmployeeService : IEmployeeService
 
         return employee;
     }
+
+    public async Task<bool> AddUserToRoles(Guid userId, List<Guid> roleIds)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString()) ?? throw new ArgumentException($"User with ID {userId} not found.", nameof(userId));
+
+        foreach (var roleId in roleIds)
+        {
+            var role = await _roleService.GetRole(roleId) ?? throw new ArgumentException($"Role with ID {roleId} not found.", nameof(roleId));
+            await _userManager.AddToRoleAsync(user, role.Name);
+        }
+
+        return true;
+    }
+
+    public async Task<bool> RemoveUserFromRole(Guid userId, List<Guid> roleIds)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString()) ?? throw new ArgumentException($"User with ID {userId} not found.", nameof(userId));
+
+        foreach (var roleId in roleIds)
+        {
+            var role = await _roleService.GetRole(roleId) ?? throw new ArgumentException($"Role with ID {roleId} not found.", nameof(roleId));
+            await _userManager.RemoveFromRoleAsync(user, role.Name);
+        }
+
+        return true;
+    }
 }

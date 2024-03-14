@@ -143,4 +143,34 @@ public class EmployeeController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpPost("add-roles/{userId}")]
+    public async Task<IActionResult> AddUserToRoles(Guid userId, [FromBody] List<Guid> roleIds)
+    {
+        try
+        {
+            var success = await _employeeService.AddUserToRoles(userId, roleIds);
+
+            return Ok(success);
+        }
+        catch (ArgumentException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+
+    [HttpDelete("remove-roles/{userId}")]
+    public async Task<IActionResult> RemoveUserFromRole(Guid userId, [FromBody] List<Guid> roleIds)
+    {
+        try
+        {
+            var success = await _employeeService.RemoveUserFromRole(userId, roleIds);
+
+            return Ok(success);
+        }
+        catch (ArgumentException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
 }
